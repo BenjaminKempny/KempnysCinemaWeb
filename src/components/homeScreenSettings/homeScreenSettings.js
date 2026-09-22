@@ -413,8 +413,17 @@ function renderPerLibrarySettings(context, user, userViews, userSettings) {
     elem.innerHTML = html;
 }
 
+function updateGenreHomeState(context, isEnabled) {
+    const container = context.querySelector('.homeSectionOrderContainer');
+    if (container) container.classList.toggle('hide', isEnabled);
+}
+
 function loadForm(context, user, userSettings, apiClient) {
     context.querySelector('.chkHidePlayedFromLatest').checked = user.Configuration.HidePlayedInLatest || false;
+
+    const chkGenreHome = context.querySelector('.chkGenreHome');
+    chkGenreHome.checked = userSettings.enableGenreHome();
+    updateGenreHomeState(context, chkGenreHome.checked);
 
     updateHomeSectionValues(context, userSettings);
 
@@ -507,6 +516,8 @@ async function saveUser(context, user, userSettingsInstance, apiClient) {
 
     userSettingsInstance.set('tvhome', context.querySelector('.selectTVHomeScreen').value);
 
+    userSettingsInstance.enableGenreHome(context.querySelector('.chkGenreHome').checked);
+
     userSettingsInstance.set('homesection0', context.querySelector('#selectHomeSection1').value);
     userSettingsInstance.set('homesection1', context.querySelector('#selectHomeSection2').value);
     userSettingsInstance.set('homesection2', context.querySelector('#selectHomeSection3').value);
@@ -567,6 +578,11 @@ function onSubmit(e) {
 }
 
 function onChange(e) {
+    if (e.target.classList?.contains('chkGenreHome')) {
+        updateGenreHomeState(e.currentTarget, e.target.checked);
+        return;
+    }
+
     const chkIncludeInMyMedia = dom.parentWithClass(e.target, 'chkIncludeInMyMedia');
     if (!chkIncludeInMyMedia) {
         return;

@@ -23,6 +23,37 @@ $mui-bp-xl: 1536px;
     padding-top: 0 !important;
 }
 
+// Legacy ViewManager pages are `position: absolute; top/right/bottom/left: 0`
+// and resolve against their nearest positioned ancestor. In this layout that is
+// `.mainAnimatedPages`, which holds nothing but those absolute pages and would
+// therefore collapse to `height: 0` — making every legacy page unscrollable and
+// clipped. Size it explicitly against the <main> box instead.
+// `!important` is required because user/server supplied custom CSS is injected
+// after the bundle and frequently repositions this container.
+.mainAnimatedPages {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: auto !important;
+
+    // The container is an empty overlay whenever a React page is shown, so it
+    // must not swallow pointer events from the page underneath.
+    pointer-events: none;
+
+    > .page {
+        pointer-events: auto;
+    }
+}
+
+// The app bar is fixed and <main> fills the remaining viewport, so every page
+// is its own scroll container.
+.mainAnimatedPage {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 .layout-mobile {
     .itemDetailPage {
         // Fix horizontal panning on mobile item details page

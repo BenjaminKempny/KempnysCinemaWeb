@@ -6,6 +6,7 @@ import globalize from '../../../lib/globalize';
 import { clearBackdrop } from '../../../components/backdrop/backdrop';
 import layoutManager from '../../../components/layoutManager';
 import Page from '../../../components/Page';
+import { enableGenreHome } from '../../../scripts/settings/userSettings';
 import { EventType } from 'constants/eventType';
 import Events from 'utils/events';
 
@@ -36,6 +37,9 @@ const Home = () => {
     const tabController = useRef<ControllerProps | null>();
     const tabControllers = useMemo<ControllerProps[]>(() => [], []);
 
+    // When the genre home screen is enabled, movies and series each get their own tab
+    const isGenreHome = useMemo(() => enableGenreHome(), []);
+
     const documentRef = useRef<Document>(document);
     const element = useRef<HTMLDivElement>(null);
 
@@ -43,13 +47,21 @@ const Home = () => {
         (await libraryMenu).setTitle(null);
     };
 
-    const getTabs = () => {
-        return [{
-            name: globalize.translate('Home')
-        }, {
-            name: globalize.translate('Favorites')
-        }];
-    };
+    const getTabs = useCallback(() => {
+        if (isGenreHome) {
+            return [
+                { name: globalize.translate('Home') },
+                { name: globalize.translate('Movies') },
+                { name: globalize.translate('Shows') },
+                { name: globalize.translate('Favorites') }
+            ];
+        }
+
+        return [
+            { name: globalize.translate('Home') },
+            { name: globalize.translate('Favorites') }
+        ];
+    }, [ isGenreHome ]);
 
     const getTabContainers = () => {
         return element.current?.querySelectorAll('.tabContent');
@@ -60,16 +72,11 @@ const Home = () => {
             throw new Error('index cannot be null');
         }
 
-        let depends = '';
+        const tabModules = isGenreHome ?
+            [ 'hometab', 'moviesgenretab', 'seriesgenretab', 'favorites' ] :
+            [ 'hometab', 'favorites' ];
 
-        switch (index) {
-            case 0:
-                depends = 'hometab';
-                break;
-
-            case 1:
-                depends = 'favorites';
-        }
+        const depends = tabModules[index] ?? tabModules[0];
 
         return import(/* webpackChunkName: "[request]" */ `../../../apps/legacy/controllers/${depends}`).then(({ default: ControllerFactory }) => {
             let controller = tabControllers[index];
@@ -82,7 +89,7 @@ const Home = () => {
 
             return controller;
         });
-    }, [ tabControllers ]);
+    }, [ isGenreHome, tabControllers ]);
 
     const loadTab = useCallback((index: number, previousIndex: number | null) => {
         getTabController(index).then((controller) => {
@@ -114,7 +121,7 @@ const Home = () => {
 
     const onSetTabs = useCallback(async () => {
         (await mainTabsManager).setTabs(element.current, initialTabIndex, getTabs, getTabContainers, null, onTabChange, false);
-    }, [ initialTabIndex, mainTabsManager, onTabChange ]);
+    }, [ getTabs, initialTabIndex, mainTabsManager, onTabChange ]);
 
     const onResume = useCallback(async () => {
         void setTitle();
@@ -177,7 +184,17 @@ const Home = () => {
                 <div className='tabContent pageTabContent' id='homeTab' data-index='0'>
                     <div className='sections'></div>
                 </div>
-                <div className='tabContent pageTabContent' id='favoritesTab' data-index='1'>
+                {isGenreHome && (
+                    <div className='tabContent pageTabContent' id='moviesGenreTab' data-index='1'>
+                        <div className='sections'></div>
+                    </div>
+                )}
+                {isGenreHome && (
+                    <div className='tabContent pageTabContent' id='seriesGenreTab' data-index='2'>
+                        <div className='sections'></div>
+                    </div>
+                )}
+                <div className='tabContent pageTabContent' id='favoritesTab' data-index={isGenreHome ? '3' : '1'}>
                     <div className='sections'></div>
                 </div>
             </Page>

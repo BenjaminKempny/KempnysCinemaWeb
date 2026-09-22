@@ -1,0 +1,249 @@
+/* Route-local materials; keep the existing TV focus geometry and page scrolling. */
+@mixin surface-glass($radius: 32px) {
+    background-color: rgba(34, 36, 38, 0.56);
+    background-image: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.015));
+    border-radius: $radius;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+        0 16px 40px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(24px) saturate(135%);
+}
+
+:not(.layout-tv) > body {
+    .homePage,
+    .userPreferencesPage {
+        background-image:
+            radial-gradient(ellipse at 8% 0, rgba(77, 102, 126, 0.22), transparent 48rem),
+            radial-gradient(ellipse at 95% 18rem, rgba(134, 103, 74, 0.18), transparent 48rem);
+        background-repeat: no-repeat;
+    }
+
+    /* The slider retains its native horizontal scrolling and hidden-tab states. */
+    .skinHeader.noHomeButtonHeader .headerTabs {
+        .emby-tabs-slider {
+            @include surface-glass(999px);
+
+            padding: 0.3em;
+        }
+
+        .emby-tab-button {
+            min-height: 2.5em;
+            padding: 0.55em 1.25em;
+            color: rgba(255, 255, 255, 0.76);
+            font-weight: 600;
+        }
+
+        .emby-tab-button-active {
+            background: rgba(222, 205, 172, 0.92);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+            color: #24221e;
+        }
+
+        .emby-tab-button.show-focus:focus {
+            background: #decdac !important;
+            color: #24221e;
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+            transform: none !important;
+        }
+    }
+
+    .homePage {
+        /* Leave card/scroller widths and overflow alone so focus rings stay visible. */
+        .verticalSection:not(.homeGenreHeading) {
+            @include surface-glass;
+
+            margin-inline: 1em;
+            padding-block: 1em;
+        }
+
+        .sectionTitle {
+            letter-spacing: -0.025em;
+        }
+
+        .sectionTitleTextButton {
+            border-radius: 999px;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                opacity: 1;
+            }
+
+            &:focus-visible {
+                outline: 2px solid #e0cda8;
+                outline-offset: 3px;
+            }
+        }
+
+        .homeLibraryButton {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+        }
+
+        .homeLibraryButton:hover,
+        .homeLibraryButton:focus {
+            background: #decdac;
+            color: #24221e;
+        }
+    }
+
+    .userPreferencesPage {
+        > .padded-left {
+            padding-top: 1.5em;
+        }
+
+        /* Legacy settings are one flowing form, not an independently scrolling panel. */
+        form:not(.displayPreferencesForm):not(.homeScreenPreferencesForm),
+        .homeScreenPreferencesForm > .verticalSection,
+        .perLibrarySettings > .verticalSection,
+        .displayPreferencesSections > .MuiStack-root {
+            @include surface-glass;
+
+            box-sizing: border-box;
+            padding: 1.75em;
+        }
+
+        .homeScreenPreferencesForm > .verticalSection,
+        .perLibrarySettings > .verticalSection {
+            margin-bottom: 1.5em;
+        }
+
+        .sectionTitle,
+        .displayPreferencesSections .MuiTypography-h2 {
+            color: #f5f2ec;
+            font-size: 1.4em;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        form > .sectionTitle:first-child,
+        .homeScreenPreferencesForm > .verticalSection > .sectionTitle:first-child {
+            margin-top: 0;
+        }
+
+        .fieldDescription,
+        .MuiFormHelperText-root:not(.Mui-error) {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        .emby-input,
+        .emby-textarea,
+        .emby-select-withcolor,
+        .displayPreferencesForm .MuiInputBase-root {
+            background-color: rgba(12, 15, 18, 0.32);
+            border-radius: 18px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+        }
+
+        .displayPreferencesForm .MuiOutlinedInput-notchedOutline {
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .displayPreferencesForm .MuiFilledInput-root::before,
+        .displayPreferencesForm .MuiFilledInput-root::after {
+            border-bottom: 0;
+        }
+
+        .displayPreferencesForm .MuiInputBase-root.Mui-focused {
+            box-shadow: inset 0 0 0 2px #decdac;
+        }
+
+        .displayPreferencesForm .MuiInputBase-root.Mui-error {
+            box-shadow: inset 0 0 0 2px #ff8b83;
+        }
+
+        .displayPreferencesForm .MuiFormLabel-root.Mui-focused:not(.Mui-error),
+        .displayPreferencesForm .MuiCheckbox-root.Mui-checked {
+            color: #decdac;
+        }
+
+        .paperList {
+            background: rgba(12, 15, 18, 0.22);
+            border-radius: 20px;
+        }
+
+        .button-submit:not(:disabled),
+        .displayPreferencesForm .MuiButton-root[type="submit"]:not(:disabled) {
+            min-height: 3em;
+            background: #decdac;
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+            color: #24221e;
+            font-weight: 600;
+
+            &:hover {
+                background: #edddbf;
+                transform: none;
+            }
+
+            &:focus-visible {
+                outline: 2px solid #fff;
+                outline-offset: 3px;
+            }
+        }
+    }
+
+    #myPreferencesMenuPage {
+        .readOnlyContent > .verticalSection {
+            @include surface-glass;
+
+            padding: 1.5em;
+        }
+
+        .headerUsername {
+            margin-top: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .listItem-border {
+            border: 0;
+            border-radius: 20px;
+
+            &:hover,
+            &:focus-visible {
+                background: rgba(222, 205, 172, 0.16);
+                box-shadow: inset 0 0 0 1px rgba(222, 205, 172, 0.4);
+            }
+
+            &:focus-visible {
+                outline: 2px solid #decdac;
+                outline-offset: 2px;
+            }
+        }
+
+        .listItem {
+            padding-block: 1em;
+            border-radius: 20px;
+        }
+
+        .listItemIcon {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 50%;
+            color: #decdac;
+        }
+    }
+
+    @media (max-width: 40em) {
+        .homePage .verticalSection:not(.homeGenreHeading) {
+            margin-inline: 0.5em;
+            border-radius: 24px;
+        }
+
+        .userPreferencesPage {
+            form:not(.displayPreferencesForm):not(.homeScreenPreferencesForm),
+            .homeScreenPreferencesForm > .verticalSection,
+            .perLibrarySettings > .verticalSection,
+            .displayPreferencesSections > .MuiStack-root {
+                padding: 1.1em;
+                border-radius: 24px;
+            }
+        }
+
+        #myPreferencesMenuPage .readOnlyContent > .verticalSection {
+            padding: 1em;
+            border-radius: 24px;
+        }
+    }
+}

@@ -10,7 +10,9 @@ export enum HomeSectionType {
     LatestMedia = 'latestmedia',
     NextUp = 'nextup',
     LiveTv = 'livetv',
-    ResumeBook = 'resumebook'
+    ResumeBook = 'resumebook',
+    MoviesByGenre = 'moviesbygenre',
+    SeriesByGenre = 'seriesbygenre'
 }
 
 // NOTE: This needs to match the server defaults
@@ -26,4 +28,13 @@ export const DEFAULT_SECTIONS: HomeSectionType[] = [
     HomeSectionType.None,
     HomeSectionType.None,
     HomeSectionType.None
+];
+
+// The layout used for the "Home" tab when the genre home screen is enforced.
+// Movies and series get their own tabs (see the home route).
+export const GENRE_SECTIONS: HomeSectionType[] = [
+    HomeSectionType.SmallLibraryTiles,
+    HomeSectionType.Resume,
+    HomeSectionType.ResumeAudio,
+    HomeSectionType.ResumeBook
 ];

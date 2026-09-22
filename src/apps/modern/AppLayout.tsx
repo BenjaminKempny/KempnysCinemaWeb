@@ -38,7 +38,16 @@ export const Component = () => {
                     position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
-                    height: '100%'
+                    height: '100%',
+                    // `height: 100%` only resolves when every ancestor has a definite
+                    // height. Legacy ViewManager pages are `position: absolute; inset: 0`
+                    // and use the <main> box below as their containing block, so without
+                    // a guaranteed height they collapse to the height of their (empty)
+                    // React sibling and become unscrollable.
+                    minHeight: '100vh',
+                    '@supports (min-height: 100dvh)': {
+                        minHeight: '100dvh'
+                    }
                 }}
             >
                 <StrictMode>
@@ -67,7 +76,13 @@ export const Component = () => {
                     sx={{
                         position: 'relative',
                         width: '100%',
-                        flexGrow: 1
+                        flexGrow: 1,
+                        // Flex items default to `min-height: auto`, so a page taller than
+                        // the viewport would stretch this box instead of scrolling inside
+                        // it — and the document itself does not scroll.
+                        minHeight: 0,
+                        overflowY: 'auto',
+                        overflowX: 'hidden'
                     }}
                 >
                     <AppBody>

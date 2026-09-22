@@ -1,4 +1,4 @@
-<form style="margin:0 auto;">
+<form class="homeScreenPreferencesForm" style="margin:0 auto;">
     <div class="verticalSection verticalSection-extrabottompadding">
         <h2 class="sectionTitle">${Home}</h2>
 
@@ -12,11 +12,20 @@
 
         <div class="verticalSection verticalSection-extrabottompadding">
             <label class="checkboxContainer">
+                <input class="chkGenreHome" type="checkbox" is="emby-checkbox" />
+                <span>${LabelEnableGenreHome}</span>
+            </label>
+            <div class="fieldDescription checkboxFieldDescription">${LabelEnableGenreHomeHelp}</div>
+        </div>
+
+        <div class="verticalSection verticalSection-extrabottompadding">
+            <label class="checkboxContainer">
                 <input class="chkHidePlayedFromLatest" type="checkbox" is="emby-checkbox" />
                 <span>${HideWatchedContentFromLatestMedia}</span>
             </label>
         </div>
 
+        <div class="homeSectionOrderContainer">
         <div class="selectContainer">
             <select is="emby-select" id="selectHomeSection1" label="{section1label}">
                 <option value="smalllibrarytiles">${HeaderMyMedia}</option>
@@ -28,6 +37,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -42,6 +53,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -56,6 +69,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -70,6 +85,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -84,6 +101,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -98,6 +117,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -112,6 +133,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -126,6 +149,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -140,6 +165,8 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
         </div>
@@ -154,8 +181,11 @@
                 <option value="latestmedia">${HeaderLatestMedia}</option>
                 <option value="nextup">${NextUp}</option>
                 <option value="livetv">${LiveTV}</option>
+                <option value="moviesbygenre">${HeaderMoviesByGenre}</option>
+                <option value="seriesbygenre">${HeaderSeriesByGenre}</option>
                 <option value="none">${None}</option>
             </select>
+        </div>
         </div>
     </div>
 

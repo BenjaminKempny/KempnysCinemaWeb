@@ -263,6 +263,20 @@ export class UserSettings {
     }
 
     /**
+     * Get or set the 'Genre Home Screen' state. When enabled the home screen is
+     * replaced by the "My Movies"/"My Series" layout with genre rows.
+     * @param {boolean|undefined} [val] - Flag to enable the genre home screen or undefined.
+     * @return {boolean} 'Genre Home Screen' state.
+     */
+    enableGenreHome(val) {
+        if (val !== undefined) {
+            return this.set('enableGenreHome', val.toString(), false);
+        }
+
+        return toBoolean(this.get('enableGenreHome', false), true);
+    }
+
+    /**
      * Get or set 'Theme Videos' state.
      * @param {boolean|undefined} [val] - Flag to enable 'Theme Videos' or undefined.
      * @return {boolean} 'Theme Videos' state.
@@ -733,6 +747,7 @@ export const selectAudioNormalization = currentSettings.selectAudioNormalization
 export const enableNextVideoInfoOverlay = currentSettings.enableNextVideoInfoOverlay.bind(currentSettings);
 export const enableVideoRemainingTime = currentSettings.enableVideoRemainingTime.bind(currentSettings);
 export const enableThemeSongs = currentSettings.enableThemeSongs.bind(currentSettings);
+export const enableGenreHome = currentSettings.enableGenreHome.bind(currentSettings);
 export const enableThemeVideos = currentSettings.enableThemeVideos.bind(currentSettings);
 export const enableFastFadein = currentSettings.enableFastFadein.bind(currentSettings);
 export const enableBlurhash = currentSettings.enableBlurhash.bind(currentSettings);

@@ -7,14 +7,18 @@
       "id": "appletv",
       "color": "#bcbcbc"
     }, {
+      "name": "Apple TV Modern",
+      "id": "appletvmodern",
+      "color": "#000000",
+      "default": true
+    }, {
       "name": "Blue Radiance",
       "id": "blueradiance",
       "color": "#011432"
     }, {
       "name": "Dark",
       "id": "dark",
-      "color": "#202020",
-      "default": true
+      "color": "#202020"
     }, {
       "name": "Light",
       "id": "light",

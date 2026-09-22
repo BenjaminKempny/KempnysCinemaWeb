@@ -1,0 +1,24 @@
+# Projekt-Kontext: Jellyfin-Web Custom Redesign
+
+Du bist ein Experte für React, CSS und UI/UX-Design. Mein Ziel ist ein weitreichendes visuelles und strukturelles Redesign der `jellyfin-web` Codebase (v10.9+).
+
+## 1. Visuelles Design (CSS / UI)
+Die gesamte Oberfläche soll eine moderne "Apple TV"-Ästhetik erhalten.
+*   **Theme:** Sauberes, tiefes Dark-Theme (Hintergrund in tiefem Schwarz #000000 oder extrem dunklem Grau). Keine harten Rahmen (Borders), stattdessen Trennung durch Freiraum (Padding) und weiche Kontraste.
+*   **Glassmorphism:** Die obere Navigation und Seitenmenüs sollen halbtransparent sein und einen starken Blur-Effekt nutzen (`backdrop-filter: blur(20px)`).
+*   **Karten (Cards):** Cover-Bilder (`.card`) erhalten stark abgerundete Ecken (`border-radius: 12px`). Die Typografie darunter ist zentriert und dezent.
+*   **Animationen:** Extrem weiche Transitions (`ease-out`, 0.3s - 0.4s). Beim Hovern über eine Film-Karte soll diese weich heranzoomen (`transform: scale(1.05)`) und einen weichen, leuchtenden Drop-Shadow (Apple TV Fokus-Effekt) erhalten.
+*   **Detailseite:** Filmdetails zeigen das Hintergrundbild (Backdrop) großflächig an, welches nach unten hin mit einem sanften, dunklen Gradienten (Fade to Black) ausläuft, damit der Text lesbar bleibt. Buttons sind modern und abgerundet.
+
+## 2. Strukturelle Anpassungen (React / API-Logik)
+Der Startbildschirm (Home) muss umstrukturiert werden. Die Standard-Jellyfin-Reihenfolge soll überschrieben werden.
+Das neue Layout soll zwingend in folgende primäre Sektionen unterteilt sein:
+1.  **Sektion "Meine Filme":**
+    *   Darunterliegend: Horizontal scrollbare Reihen, gruppiert nach Genres (z.B. "Action", "Comedy", "Sci-Fi").
+2.  **Sektion "Meine Serien":**
+    *   Darunterliegend: Horizontal scrollbare Reihen, ebenfalls gruppiert nach Genres.
+
+## 3. Anweisungen an die KI (Deine Aufgabe)
+Wenn ich dich um Änderungen bitte, halte dich strikt an diese Vorgaben.
+*   **Für visuelle Änderungen:** Liefere mir den präzisen CSS-Code, der die Standard-Jellyfin-Klassen überschreibt.
+*   **Für strukturelle Änderungen:** Zeige mir genau, in welchen React-Dateien (z. B. `home.js`, `components/...`) ich welche Code-Zeilen ändern muss, um die API-Requests so anzupassen, dass die Medien nach Typ (Film/Serie) und Genre gruppiert gerendert werden.

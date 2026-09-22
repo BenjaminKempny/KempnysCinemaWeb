@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material/styles';
 
 import { DEFAULT_THEME_OPTIONS } from './_base/theme';
 import appletv from './appletv';
+import appletvmodern from './appletvmodern';
 import blueradiance from './blueradiance';
 import dark from './dark';
 import light from './light';
@@ -19,6 +20,7 @@ const DEFAULT_THEME = createTheme({
     ...DEFAULT_THEME_OPTIONS,
     colorSchemes: {
         appletv,
+        appletvmodern,
         blueradiance,
         dark,
         light,

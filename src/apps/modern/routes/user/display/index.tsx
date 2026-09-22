@@ -46,16 +46,17 @@ export default function UserDisplayPreferences() {
 
     return (
         <Page
-            className='libraryPage userPreferencesPage noSecondaryNavPage'
+            className='mainAnimatedPage libraryPage userPreferencesPage noSecondaryNavPage'
             id='displayPreferencesPage'
             title={globalize.translate('Display')}
         >
             <div className='settingsContainer padded-left padded-right padded-bottom-page'>
                 <form
+                    className='displayPreferencesForm'
                     onSubmit={handleSubmitForm}
                     style={{ margin: 'auto' }}
                 >
-                    <Stack spacing={4}>
+                    <Stack className='displayPreferencesSections' spacing={4}>
                         <LocalizationPreferences
                             onChange={handleFieldChange}
                             values={values}

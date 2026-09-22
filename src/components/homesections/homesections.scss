@@ -27,3 +27,34 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
+/* Genre based home screen ("My Movies" / "My Series") */
+.homeGenreSection {
+    display: block;
+    margin-bottom: 1.6em;
+}
+
+.homeGenreHeading {
+    margin-bottom: 0.2em !important;
+}
+
+.homeGenreHeadingText {
+    font-size: 1.9em;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+
+    @media all and (max-width: 50em) {
+        font-size: 1.5em;
+    }
+}
+
+.homeGenreRow {
+    margin-bottom: 1.2em;
+}
+
+.homeGenreRowTitle {
+    font-size: 1.15em;
+    font-weight: 500;
+    opacity: 0.85;
+    margin: 0.6em 0 0.2em;
+}

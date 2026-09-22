@@ -526,6 +526,8 @@ function renderBackdrop(page, item) {
 }
 
 function renderHeaderBackdrop(page, item, apiClient) {
+    page.style.removeProperty('--detail-artwork');
+
     // Details banner is disabled in user settings
     if (!userSettings.detailsBanner()) {
         return false;
@@ -542,7 +544,10 @@ function renderHeaderBackdrop(page, item, apiClient) {
     const imgUrl = getItemBackdropImageUrl(apiClient, item, { maxWidth: dom.getScreenWidth() }, false);
 
     if (imgUrl) {
-        imageLoader.lazyImage(itemBackdropElement, imgUrl);
+        page.style.setProperty('--detail-artwork', `url(${JSON.stringify(imgUrl)})`);
+        if (layoutManager.mobile) {
+            imageLoader.lazyImage(itemBackdropElement, imgUrl);
+        }
         hasbackdrop = true;
     } else {
         itemBackdropElement.style.backgroundImage = '';
@@ -562,10 +567,7 @@ function reloadFromItem(instance, page, params, item, user) {
 
     renderLogo(page, item, apiClient);
 
-    // Render the mobile header backdrop
-    if (layoutManager.mobile) {
-        renderHeaderBackdrop(page, item, apiClient);
-    }
+    renderHeaderBackdrop(page, item, apiClient);
 
     renderBackdrop(page, item);
 
@@ -1023,7 +1025,6 @@ function renderDetails(page, instance, item, apiClient, context) {
     }
 
     renderItemCollections(page, item, apiClient, context);
-    renderSimilarItems(page, item, context);
     renderMoreFromSeason(page, item, apiClient);
     renderMoreFromArtist(page, item, apiClient);
     renderChannelGuide(page, apiClient, item);
@@ -1228,56 +1229,6 @@ function renderItemCollections(page, item, apiClient, context) {
         }).catch(() => {
             section.classList.add('hide');
         });
-}
-
-function renderSimilarItems(page, item, context) {
-    const similarCollapsible = page.querySelector('#similarCollapsible');
-
-    if (similarCollapsible) {
-        if (item.Type != 'Movie' && item.Type != 'Trailer' && item.Type != 'Series' && item.Type != 'Program' && item.Type != 'Recording' && item.Type != 'MusicAlbum' && item.Type != 'MusicArtist' && item.Type != 'Playlist' && item.Type != 'Audio') {
-            similarCollapsible.classList.add('hide');
-            return;
-        }
-
-        similarCollapsible.classList.remove('hide');
-        const apiClient = ServerConnections.getApiClient(item.ServerId);
-        const options = {
-            userId: apiClient.getCurrentUserId(),
-            limit: 12,
-            fields: 'PrimaryImageAspectRatio,CanDelete'
-        };
-
-        if (item.Type == 'MusicAlbum' && item.AlbumArtists && item.AlbumArtists.length) {
-            options.ExcludeArtistIds = item.AlbumArtists[0].Id;
-        }
-
-        apiClient.getSimilarItems(item.Id, options).then(function (result) {
-            if (!result.Items.length) {
-                similarCollapsible.classList.add('hide');
-                return;
-            }
-
-            similarCollapsible.classList.remove('hide');
-            let html = '';
-            html += cardBuilder.getCardsHtml({
-                items: result.Items,
-                shape: 'autooverflow',
-                showParentTitle: item.Type == 'MusicAlbum',
-                centerText: true,
-                showTitle: true,
-                context: context,
-                lazy: true,
-                showDetailsMenu: true,
-                coverImage: item.Type == 'MusicAlbum' || item.Type == 'MusicArtist',
-                overlayPlayButton: true,
-                overlayText: false,
-                showYear: item.Type === 'Movie' || item.Type === 'Trailer' || item.Type === 'Series'
-            });
-            const similarContent = similarCollapsible.querySelector('.similarContent');
-            similarContent.innerHTML = html;
-            imageLoader.lazyChildren(similarContent);
-        });
-    }
 }
 
 function renderSeriesAirTime(page, item) {
@@ -1741,7 +1692,7 @@ function renderCollectionItemType(page, parentItem, type, items) {
     html += '<span>' + type.name + '</span>';
     html += '</h2>';
     html += '</div>';
-    html += '<div is="emby-itemscontainer" class="itemsContainer collectionItemsContainer vertical-wrap padded-left padded-right">';
+    html += '<div is="emby-itemscontainer" class="itemsContainer collectionItemsContainer vertical-wrap padded-left padded-right" tabindex="0" role="region" aria-label="' + escapeHtml(type.name) + '">';
     const shape = type.type == 'MusicAlbum' ? getSquareShape(false) : getPortraitShape(false);
     html += cardBuilder.getCardsHtml({
         items: items,

@@ -1,5 +1,5 @@
 import layoutManager from 'components/layoutManager';
-import { DEFAULT_SECTIONS, HomeSectionType } from 'constants/homeSectionType';
+import { DEFAULT_SECTIONS, GENRE_SECTIONS, HomeSectionType } from 'constants/homeSectionType';
 import { getUserViewsQuery } from 'hooks/api/useUserViews';
 import globalize from 'lib/globalize';
 import ServerConnections from 'lib/jellyfin-apiclient/ServerConnections';
@@ -7,6 +7,7 @@ import Dashboard from 'utils/dashboard';
 import { queryClient } from 'utils/query/queryClient';
 
 import { loadRecordings } from './sections/activeRecordings';
+import { loadGenreRows, MOVIE_GENRE_SECTION, SERIES_GENRE_SECTION } from './sections/genreRows';
 import { loadLibraryButtons } from './sections/libraryButtons';
 import { loadLibraryTiles } from './sections/libraryTiles';
 import { loadLiveTV } from './sections/liveTv';
@@ -30,6 +31,11 @@ export function getDefaultSection(index) {
 }
 
 function getAllSectionsToShow(userSettings) {
+    // The genre home screen replaces the configurable section order entirely.
+    if (userSettings.enableGenreHome()) {
+        return [ ...GENRE_SECTIONS ];
+    }
+
     const sections = [];
     for (let i = 0, length = MAX_SECTIONS; i < length; i++) {
         let section = userSettings.get('homesection' + i) || getDefaultSection(i);
@@ -107,6 +113,39 @@ export function loadSections(elem, apiClient, user, userSettings) {
         });
 }
 
+/**
+ * Renders a dedicated tab containing only the genre rows for a single item type.
+ * @param {HTMLElement} elem the container element
+ * @param {object} apiClient the api client
+ * @param {object} user the current user
+ * @param {object} config the genre section config (MOVIE_GENRE_SECTION/SERIES_GENRE_SECTION)
+ */
+export function loadGenreTab(elem, apiClient, user, config) {
+    const api = ServerConnections.getApi(apiClient.serverId());
+    const userId = user.Id || apiClient.getCurrentUserId();
+
+    elem.classList.add('homeSectionsContainer');
+
+    return queryClient
+        .fetchQuery(getUserViewsQuery(api, { userId }))
+        .then(result => result.Items || [])
+        .then(userViews => {
+            elem.innerHTML = '<div class="verticalSection section0"></div>';
+
+            return loadGenreRows(
+                elem.querySelector('.section0'),
+                apiClient,
+                user,
+                userViews,
+                { enableOverflow: enableScrollX() },
+                { ...config, showHeading: false }
+            );
+        })
+        // Timeout for polyfilled CustomElements (webOS 1.2)
+        .then(() => new Promise((resolve) => setTimeout(resolve, 0)))
+        .then(() => resume(elem, { refresh: true }));
+}
+
 export function destroySections(elem) {
     const elems = elem.querySelectorAll('.itemsContainer');
     for (const e of elems) {
@@ -154,6 +193,10 @@ function loadSection(page, apiClient, user, userSettings, userViews, section, in
             break;
         case HomeSectionType.LiveTv:
             return loadLiveTV(elem, apiClient, user, options);
+        case HomeSectionType.MoviesByGenre:
+            return loadGenreRows(elem, apiClient, user, userViews, options, MOVIE_GENRE_SECTION);
+        case HomeSectionType.SeriesByGenre:
+            return loadGenreRows(elem, apiClient, user, userViews, options, SERIES_GENRE_SECTION);
         case HomeSectionType.NextUp:
             loadNextUp(elem, apiClient, userSettings, options);
             break;
@@ -183,6 +226,7 @@ function enableScrollX() {
 export default {
     getDefaultSection,
     loadSections,
+    loadGenreTab,
     destroySections,
     pause,
     resume

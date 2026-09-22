@@ -4,6 +4,7 @@ import '@mui/material/styles';
 declare module '@mui/material/styles' {
     interface ColorSchemeOverrides {
         appletv: true;
+        appletvmodern: true;
         blueradiance: true;
         purplehaze: true;
         wmc: true;
