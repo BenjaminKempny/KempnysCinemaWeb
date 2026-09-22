@@ -13,9 +13,10 @@ export const ASYNC_USER_ROUTES: AsyncRoute[] = [
     { path: 'playlists', type: AppType.Modern },
     { path: 'mixed', type: AppType.Modern },
     { path: 'mypreferencesdisplay', page: 'user/display', type: AppType.Modern },
+    { path: 'mypreferenceshome', page: 'user/home', type: AppType.Modern },
     { path: 'mypreferencesmenu', page: 'user/settings' },
     { path: 'quickconnect', page: 'quickConnect' },
-    { path: 'search' },
+    { path: 'search', type: AppType.Modern },
     { path: 'tv', page: 'shows', type: AppType.Modern },
-    { path: 'userprofile', page: 'user/userprofile' }
+    { path: 'userprofile', page: 'user/userprofile', type: AppType.Modern }
 ];

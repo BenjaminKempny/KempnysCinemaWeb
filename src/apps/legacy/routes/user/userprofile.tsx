@@ -107,27 +107,28 @@ const UserProfile: FunctionComponent = () => {
             reader.onerror = onFileReaderError;
             reader.onabort = onFileReaderAbort;
             reader.onload = () => {
-                if (!userId) {
+                if (!user?.Id) {
                     console.error('[userprofile] missing user id');
                     return;
                 }
 
-                userImage.style.backgroundImage = 'url(' + reader.result + ')';
-                window.ApiClient.uploadUserImage(userId, ImageType.Primary, file).then(function () {
-                    loading.hide();
+                loading.show();
+                window.ApiClient.uploadUserImage(user.Id, ImageType.Primary, file).then(function () {
+                    userImage.style.backgroundImage = 'url(' + reader.result + ')';
                     void queryClient.invalidateQueries({
                         queryKey: ['User']
                     });
                 }).catch(err => {
                     console.error('[userprofile] failed to upload image', err);
-                });
+                    toast(globalize.translate('ErrorDefault'));
+                }).finally(() => loading.hide());
             };
 
             reader.readAsDataURL(file);
         };
 
         const onDeleteImageClick = function () {
-            if (!userId) {
+            if (!user?.Id) {
                 console.error('[userprofile] missing user id');
                 return;
             }
@@ -137,14 +138,14 @@ const UserProfile: FunctionComponent = () => {
                 globalize.translate('DeleteImage')
             ).then(function () {
                 loading.show();
-                window.ApiClient.deleteUserImage(userId, ImageType.Primary).then(function () {
-                    loading.hide();
+                window.ApiClient.deleteUserImage(user.Id!, ImageType.Primary).then(function () {
                     void queryClient.invalidateQueries({
                         queryKey: ['User']
                     });
                 }).catch(err => {
                     console.error('[userprofile] failed to delete image', err);
-                });
+                    toast(globalize.translate('ErrorDefault'));
+                }).finally(() => loading.hide());
             }).catch(() => {
                 // confirm dialog closed
             });

@@ -1,10 +1,12 @@
 import type { Api } from '@jellyfin/sdk';
 import type { UserDto } from '@jellyfin/sdk/lib/generated-client';
+import { useQuery } from '@tanstack/react-query';
 import type { ApiClient, Event } from 'jellyfin-apiclient';
 import React, { type FC, type PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ServerConnections } from 'lib/jellyfin-apiclient';
 import events from 'utils/events';
+import { getUserQuery } from './api/useUser';
 
 export interface JellyfinApiContext {
     __legacyApiClient__?: ApiClient
@@ -19,12 +21,13 @@ export const ApiProvider: FC<PropsWithChildren<unknown>> = ({ children }) => {
     const [ legacyApiClient, setLegacyApiClient ] = useState<ApiClient>();
     const [ api, setApi ] = useState<Api>();
     const [ user, setUser ] = useState<UserDto>();
+    const { data: refreshedUser } = useQuery(getUserQuery(api, { userId: user?.Id }));
 
     const context = useMemo(() => ({
         __legacyApiClient__: legacyApiClient,
         api,
-        user
-    }), [ api, legacyApiClient, user ]);
+        user: api && user ? refreshedUser || user : user
+    }), [ api, legacyApiClient, user, refreshedUser ]);
 
     useEffect(() => {
         ServerConnections.currentApiClient()

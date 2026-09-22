@@ -27,7 +27,7 @@ export const getUserQuery = (
     api?: Api,
     { userId }: GetUserByIdParams = {}
 ) => queryOptions({
-    queryKey: [ QUERY_KEY, userId ],
+    queryKey: [ QUERY_KEY, userId, api?.basePath ],
     queryFn: ({ signal }) => fetchUser(api!, { userId: userId! }, { signal }),
     enabled: !!api && !!userId
 });

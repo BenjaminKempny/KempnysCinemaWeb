@@ -1,0 +1,1073 @@
+#cinemaHomePage.cinemaPage,
+.cinemaPage.cinemaUtilityPage {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    // Keep legacy .page padding outside the cinema grid.
+    padding: 0 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.cinemaHome {
+    --cinema-border: rgba(229, 240, 255, 0.14);
+    --cinema-muted: #b6c0cd;
+    --cinema-accent: #e1edfa;
+
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 24px;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    padding: 24px 24px calc(80px + env(safe-area-inset-bottom));
+    background: radial-gradient(ellipse at 60% 0, #243142 0, #111821 45%, #080c12 85%);
+    color: #f6f8fc;
+    color-scheme: dark;
+}
+
+.cinemaHome *,
+.cinemaHome *::before,
+.cinemaHome *::after,
+.cinemaDialog * {
+    box-sizing: border-box;
+}
+
+.cinemaAmbient {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: min(100%, 1100px);
+    object-fit: cover;
+    opacity: 0.18;
+    filter: blur(40px) saturate(0.65);
+    pointer-events: none;
+    mask-image: linear-gradient(#000, transparent);
+}
+
+.cinemaShell {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+    padding: 24px;
+    border: 1px solid var(--cinema-border);
+    border-radius: 36px;
+    background: linear-gradient(150deg, rgba(40, 49, 62, 0.92), rgba(14, 19, 27, 0.96));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 32px 96px rgba(0, 0, 0, 0.3);
+}
+
+.cinemaHeader {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 88px;
+    padding: 0 12px 18px;
+}
+
+.cinemaBrand {
+    position: absolute;
+    inset-inline-start: 8px;
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 650;
+    letter-spacing: -0.04em;
+}
+
+.cinemaBrand img {
+    display: block;
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+}
+
+.cinemaUtilityHeader {
+    justify-content: flex-start;
+
+    .cinemaBrand {
+        position: static;
+        flex: 0 0 auto;
+    }
+}
+
+.cinemaTabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 5px;
+    border: 1px solid var(--cinema-border);
+    border-radius: 999px;
+    background: rgba(5, 10, 17, 0.45);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.cinemaTabs a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 26px;
+    border-radius: 999px;
+    color: #c6d0dd;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.cinemaTabs a[aria-current="page"] {
+    background: var(--cinema-accent);
+    box-shadow: 0 2px 12px rgba(181, 211, 247, 0.16);
+    color: #162333;
+}
+
+.cinemaSidebar {
+    position: sticky;
+    z-index: 20;
+    top: max(24px, calc(50vh - 172px));
+    display: flex;
+    align-self: start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 8px;
+    border: 1px solid var(--cinema-border);
+    border-radius: 999px;
+    background: #1a222e;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 36px rgba(0, 0, 0, 0.3);
+    width: 64px;
+}
+
+.cinemaNavItem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: #b5c0cf;
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.cinemaNavItem svg {
+    width: 23px;
+    height: 23px;
+}
+
+.cinemaNavItem[aria-current="page"] {
+    background: rgba(216, 234, 255, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(222, 238, 255, 0.14);
+    color: #f0f7ff;
+}
+
+.cinemaContent,
+.cinemaView {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    min-width: 0;
+}
+
+.cinemaContent {
+    gap: 18px;
+}
+
+.cinemaCatalog {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.cinemaHeading {
+    margin: 0;
+    color: #f6f8fc;
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    font-weight: 650;
+    letter-spacing: -0.045em;
+    line-height: 1.15;
+}
+
+.cinemaEyebrow {
+    margin: 0 0 12px;
+    color: #ccd8e7;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.cinemaToolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    padding: 8px;
+}
+
+.cinemaToolbar .cinemaHeading {
+    margin-inline-end: auto;
+}
+
+.cinemaToolbar h2 {
+    margin: 0;
+    margin-inline-end: auto;
+    color: #f0f4fa;
+    font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+}
+
+.cinemaToolbar > p {
+    margin: 0;
+    color: var(--cinema-muted);
+    line-height: 1.5;
+}
+
+.cinemaSource,
+.cinemaSort {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    color: var(--cinema-muted);
+    font-size: 0.85rem;
+}
+
+.cinemaSelect,
+.cinemaSource select,
+.cinemaSort select {
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid rgba(229, 240, 255, 0.2);
+    border-radius: 14px;
+    background: #202a38;
+    color: #f0f5fc;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cinemaHero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: flex-end;
+    min-height: 450px;
+    aspect-ratio: 2.35;
+    overflow: hidden;
+    border-radius: 26px;
+    background: #172330;
+    box-shadow: inset 0 0 0 1px var(--cinema-border), 0 16px 40px rgba(0, 0, 0, 0.16);
+}
+
+.cinemaHero::after {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(4, 10, 18, 0.85), rgba(4, 10, 18, 0.32) 60%, rgba(4, 10, 18, 0.08)), linear-gradient(0deg, rgba(5, 11, 19, 0.88), transparent 80%);
+    content: "";
+    pointer-events: none;
+}
+
+.cinemaHeroImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+}
+
+.cinemaHeroContent {
+    position: relative;
+    z-index: 2;
+    width: min(70%, 740px);
+    padding: clamp(28px, 4vw, 64px);
+}
+
+.cinemaHeroContent h1,
+.cinemaHeroContent h2 {
+    margin: 0 0 18px;
+    color: #fff;
+    font-size: clamp(2.4rem, 4.8vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+    text-shadow: 0 4px 28px rgba(0, 0, 0, 0.24);
+}
+
+.cinemaHeroOverview {
+    display: -webkit-box;
+    margin: 18px 0 24px;
+    overflow: hidden;
+    color: #d8dfe9;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    line-height: 1.65;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.cinemaHeroMeta,
+.cinemaHeroActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.cinemaHeroMeta {
+    margin-bottom: 18px;
+    color: #d8e2ef;
+    font-size: 0.82rem;
+}
+
+.cinemaTag {
+    padding: 6px 11px;
+    border: 1px solid rgba(228, 239, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(26, 35, 47, 0.72);
+    color: #e3ebf5;
+    font-size: 0.73rem;
+    line-height: 1.3;
+}
+
+.cinemaButton,
+.cinemaIconButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    gap: 9px;
+    min-height: 44px;
+    padding: 11px 22px;
+    border: 1px solid rgba(229, 240, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(50, 61, 76, 0.88);
+    color: #f3f7fd;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.cinemaButton-primary {
+    border-color: rgba(255, 255, 255, 0.8);
+    background: #e1edfa;
+    box-shadow: 0 4px 24px rgba(183, 211, 246, 0.12);
+    color: #142232;
+}
+
+.cinemaButton svg,
+.cinemaIconButton svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+}
+
+.cinemaIconButton {
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+}
+
+.cinemaHeroArrows {
+    position: absolute;
+    z-index: 3;
+    inset-inline-end: 28px;
+    bottom: 28px;
+    display: flex;
+    gap: 8px;
+}
+
+.cinemaSection {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--cinema-border);
+    border-radius: 26px;
+    background: linear-gradient(145deg, rgba(222, 235, 255, 0.065), rgba(222, 235, 255, 0.015));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.cinemaSectionHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.cinemaSectionHeader h2,
+.cinemaGenre h2 {
+    margin: 0;
+    color: #f0f4fa;
+    font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+}
+
+.cinemaRow {
+    display: flex;
+    gap: 18px;
+    min-width: 0;
+    margin: -5px;
+    padding: 5px 5px 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-color: #566173 transparent;
+    scrollbar-width: thin;
+}
+
+.cinemaGenre .cinemaRow {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.cinemaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 26px 20px;
+    min-width: 0;
+}
+
+.cinemaCard {
+    position: relative;
+    min-width: 0;
+    scroll-snap-align: start;
+}
+
+.cinemaRow > .cinemaCard {
+    flex: 0 0 240px;
+}
+
+.cinemaCardLink {
+    display: block;
+    overflow: hidden;
+    border-radius: 14px;
+    color: #f3f6fb;
+    text-decoration: none;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.cinemaCardImage {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 14px;
+    background: #24303e;
+    object-fit: cover;
+}
+
+.cinemaCardBody {
+    padding: 12px 2px 2px;
+}
+
+.cinemaCardBody h3 {
+    margin: 0;
+    overflow: hidden;
+    color: #f0f4fa;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cinemaCardBody p {
+    margin: 5px 0 0;
+    overflow: hidden;
+    color: var(--cinema-muted);
+    font-size: 0.78rem;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cinemaCard-wide .cinemaCardImage {
+    aspect-ratio: 16 / 10;
+}
+
+.cinemaCard-wide .cinemaCardBody {
+    position: absolute;
+    inset: auto 0 0;
+    min-height: 66%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 30px 56px 17px 16px;
+    border-radius: 0 0 14px 14px;
+    background: linear-gradient(transparent, rgba(3, 9, 16, 0.9));
+    pointer-events: none;
+}
+
+.cinemaCardPlay,
+.cinemaCardMenu {
+    position: absolute;
+    z-index: 2;
+    inset-inline-end: 10px;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 7px;
+    border: 1px solid rgba(239, 246, 255, 0.3);
+    border-radius: 50%;
+    background: rgba(13, 23, 36, 0.85);
+    color: #f4f8ff;
+    cursor: pointer;
+}
+
+.cinemaCardPlay {
+    bottom: 14px;
+}
+
+.cinemaCardMenu {
+    top: 10px;
+}
+
+.cinemaProgress {
+    position: absolute;
+    z-index: 2;
+    inset-inline-start: 10px;
+    bottom: 0;
+    width: calc(100% - 20px);
+    max-width: calc(100% - 20px);
+    height: 3px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(213, 232, 255, 0.18);
+    accent-color: #d5e8ff;
+    box-shadow: 0 0 12px rgba(191, 222, 255, 0.3);
+}
+
+.cinemaCard-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #334457, #182331);
+    color: #a9bfd8;
+}
+
+.cinemaCard-placeholder svg {
+    width: 44px;
+    height: 44px;
+}
+
+.cinemaStatus,
+.cinemaEmpty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 260px;
+    padding: 40px 24px;
+    color: #ccd6e3;
+    text-align: center;
+}
+
+.cinemaEmpty h2,
+.cinemaEmpty p {
+    max-width: 480px;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.cinemaEmpty > svg {
+    width: 48px;
+    height: 48px;
+    color: #a7bed9;
+}
+
+.cinemaSkeleton {
+    min-height: 220px;
+    border: 1px solid var(--cinema-border);
+    border-radius: 22px;
+    background: linear-gradient(120deg, #1c2735, #2b394a, #1c2735);
+    background-size: 200% 100%;
+    animation: cinemaShimmer 2s ease-in-out infinite alternate;
+}
+
+.cinemaLoadMore {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0 8px;
+}
+
+.cinemaGenre {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.cinemaCollectionHero {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 12px 8px;
+}
+
+.cinemaCollectionHero > img,
+.cinemaCollectionHero > .cinemaCard-placeholder {
+    width: 108px;
+    aspect-ratio: 2 / 3;
+    max-height: 162px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+}
+
+.cinemaCollectionHero > div {
+    min-width: 0;
+}
+
+.cinemaCollectionHero h1 {
+    margin: 0 0 12px;
+    font-size: clamp(1.6rem, 3vw, 2.8rem);
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+}
+
+.cinemaCollectionHero p {
+    max-width: 740px;
+    color: var(--cinema-muted);
+    line-height: 1.65;
+}
+
+.cinemaDialog .MuiDialog-paper {
+    border: 1px solid rgba(229, 240, 255, 0.2);
+    border-radius: 26px;
+    background: #1b2532;
+    background-image: linear-gradient(140deg, rgba(229, 240, 255, 0.05), transparent);
+    box-shadow: 0 32px 100px rgba(0, 0, 0, 0.5);
+    color: #f0f5fc;
+    color-scheme: dark;
+}
+
+.cinemaPickerResults {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: 10px;
+    max-height: 420px;
+    padding: 5px;
+    overflow-y: auto;
+}
+
+.cinemaPickerItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    min-height: 72px;
+    padding: 10px;
+    border: 1px solid rgba(229, 240, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(229, 240, 255, 0.05);
+    color: #eff5fc;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+}
+
+.cinemaPickerItem img,
+.cinemaPickerItem > .cinemaCard-placeholder {
+    width: 40px;
+    height: 58px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.cinemaPickerItem input {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: #d5e8ff;
+}
+
+.cinemaPickerItem > .cinemaCard-placeholder svg {
+    width: 24px;
+    height: 24px;
+}
+
+.cinemaPickerItem span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.cinemaForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-block: 8px;
+}
+
+.cinemaForm > label:not(.cinemaCheckbox) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #d2ddea;
+    font-size: 0.9rem;
+}
+
+.cinemaForm > p {
+    margin: 0;
+    color: #b6c0cd;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.cinemaSelection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cinemaSelection .cinemaButton {
+    max-width: 100%;
+    padding: 9px 15px;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
+
+.cinemaCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    color: #d2ddea;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.cinemaCheckbox input {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin: 0;
+    accent-color: #d5e8ff;
+}
+
+.cinemaForm > label > input:not([type="checkbox"]) {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 14px;
+    border: 1px solid rgba(229, 240, 255, 0.2);
+    border-radius: 12px;
+    background: #202a38;
+    color: #f0f5fc;
+    font: inherit;
+}
+
+.cinemaHome :is(a, button, select, input):focus-visible,
+.cinemaDialog :is(a, button, select, input):focus-visible {
+    outline: 2px solid #d4e8ff;
+    outline-offset: 3px;
+}
+
+.cinemaButton:disabled,
+.cinemaIconButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Only the floating rail blurs its backdrop; repeated cards stay inexpensive. */
+@supports (backdrop-filter: blur(20px)) {
+    .cinemaSidebar {
+        background: rgba(28, 37, 49, 0.7);
+        backdrop-filter: blur(24px) saturate(135%);
+    }
+
+    .cinemaShell {
+        background: linear-gradient(150deg, rgba(40, 49, 62, 0.78), rgba(14, 19, 27, 0.92));
+    }
+}
+
+@media (hover: hover) {
+    .cinemaTabs a:hover,
+    .cinemaNavItem:hover {
+        background: rgba(224, 237, 255, 0.22);
+        color: #fff;
+    }
+
+    .cinemaButton:not(:disabled):hover,
+    .cinemaIconButton:not(:disabled):hover,
+    .cinemaCardPlay:hover,
+    .cinemaCardMenu:hover,
+    .cinemaPickerItem:hover {
+        background: #43536a;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .cinemaButton-primary:not(:disabled):hover {
+        background: #fff;
+    }
+
+    .cinemaCardLink:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        transform: translateY(-3px);
+    }
+}
+
+@media (max-width: 1100px) {
+    .cinemaHome {
+        gap: 16px;
+        padding: 20px 20px calc(80px + env(safe-area-inset-bottom));
+    }
+
+    .cinemaShell {
+        padding: 16px;
+        border-radius: 30px;
+    }
+
+    .cinemaSidebar {
+        gap: 10px;
+        padding-inline: 5px;
+    }
+
+    .cinemaBrand span {
+        display: none;
+    }
+
+    .cinemaHero {
+        min-height: 420px;
+    }
+
+    .cinemaHeroContent {
+        width: 80%;
+        padding: 32px;
+    }
+
+    .cinemaGrid {
+        gap: 22px 16px;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+
+    .cinemaSection {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 700px) {
+    .cinemaHome {
+        display: block;
+        padding: 12px 10px calc(100px + env(safe-area-inset-bottom));
+    }
+
+    .cinemaShell {
+        padding: 10px;
+        border-radius: 26px;
+    }
+
+    .cinemaHeader {
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 70px;
+        padding: 0 0 12px;
+    }
+
+    .cinemaBrand {
+        position: static;
+        flex-shrink: 0;
+    }
+
+    .cinemaBrand img {
+        width: 56px;
+        height: 56px;
+    }
+
+    .cinemaTabs {
+        gap: 0;
+        padding: 4px;
+    }
+
+    .cinemaTabs a {
+        min-height: 40px;
+        padding: 10px 14px;
+        font-size: 0.76rem;
+    }
+
+    .cinemaSidebar {
+        position: fixed;
+        top: auto;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        inset-inline: 50% auto;
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 6px;
+        width: min(340px, calc(100% - 32px));
+        padding: 8px 10px;
+        transform: translateX(-50%);
+    }
+
+    .cinemaNavItem {
+        width: 46px;
+        height: 46px;
+    }
+
+    .cinemaView {
+        gap: 20px;
+    }
+
+    .cinemaHero {
+        min-height: 490px;
+        aspect-ratio: auto;
+        border-radius: 20px;
+    }
+
+    .cinemaHero::after {
+        background: linear-gradient(0deg, rgba(5, 11, 19, 0.98), rgba(5, 11, 19, 0.7) 45%, rgba(5, 11, 19, 0.06));
+    }
+
+    .cinemaHeroImage {
+        object-position: 62% center;
+    }
+
+    .cinemaHeroContent {
+        width: 100%;
+        padding: 110px 22px 80px;
+    }
+
+    .cinemaHeroContent h1,
+    .cinemaHeroContent h2 {
+        font-size: clamp(2.2rem, 9vw, 3.4rem);
+    }
+
+    .cinemaHeroOverview {
+        font-size: 0.88rem;
+    }
+
+    .cinemaHeroArrows {
+        inset-inline-end: 20px;
+        bottom: 18px;
+    }
+
+    .cinemaButton {
+        padding-inline: 18px;
+    }
+
+    .cinemaToolbar {
+        padding-inline: 4px;
+    }
+
+    .cinemaToolbar .cinemaHeading {
+        flex-basis: 100%;
+    }
+
+    .cinemaSection {
+        padding: 16px 12px;
+        border-radius: 20px;
+    }
+
+    .cinemaRow {
+        gap: 12px;
+    }
+
+    .cinemaRow > .cinemaCard {
+        flex-basis: 230px;
+    }
+
+    .cinemaGrid {
+        grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+        gap: 20px 12px;
+    }
+
+    .cinemaCardBody h3 {
+        font-size: 0.84rem;
+    }
+
+    .cinemaCardPlay,
+    .cinemaCardMenu {
+        width: 44px;
+        height: 44px;
+        padding: 10px;
+    }
+
+    .cinemaCard-wide .cinemaCardBody {
+        padding-inline-end: 62px;
+    }
+
+    .cinemaCollectionHero {
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .cinemaCollectionHero > img,
+    .cinemaCollectionHero > .cinemaCard-placeholder {
+        width: 80px;
+        max-height: 120px;
+    }
+
+    .cinemaDialog .MuiDialog-paper {
+        width: calc(100% - 24px);
+        margin: 12px;
+        border-radius: 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .cinemaTabs a {
+        padding-inline: 10px;
+        font-size: 0.72rem;
+    }
+
+    .cinemaGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cinemaHeroContent {
+        padding-inline: 16px;
+    }
+}
+
+@keyframes cinemaShimmer {
+    from {
+        background-position: 100% 0;
+    }
+
+    to {
+        background-position: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cinemaHome *,
+    .cinemaHome *::before,
+    .cinemaHome *::after,
+    .cinemaDialog * {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}

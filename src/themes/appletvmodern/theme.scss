@@ -873,16 +873,29 @@ a[data-role="button"],
 
 /* ---------------------------------------------------------------------------
 
-* 8. Detail page — blurred artwork behind floating glass panels
+* 8. Detail page — cinema artwork and dark charcoal panels
 
 * ------------------------------------------------------------------------ */
 
 
 /* Keep the TV focus layout intact; the glass composition is for desktop/touch. */
 
+// Cinema details have their own navigation instead of the application toolbar.
+.modernAppLayout #itemDetailPage.itemDetailPage .detailPageWrapperContainer {
+    margin-block: 24px;
+
+    @media (max-width: 50em) {
+        margin-block: 12px;
+    }
+}
+
 :not(.layout-tv) > body #itemDetailPage {
 
     isolation: isolate;
+
+    background: #0e131b;
+
+    color: #e1edfa;
 
 
     .itemBackdrop {
@@ -905,7 +918,7 @@ a[data-role="button"],
 
         background-attachment: scroll;
 
-        filter: blur(40px) saturate(130%) brightness(0.65);
+        filter: blur(40px) saturate(35%) brightness(0.28);
 
         pointer-events: none;
 
@@ -933,9 +946,6 @@ a[data-role="button"],
 
     .detailPageWrapperContainer {
 
-        @include glass(rgba(34, 36, 38, 0.56), blur(24px) saturate(140%), 32px);
-
-
         position: relative;
 
         z-index: 1;
@@ -944,9 +954,9 @@ a[data-role="button"],
 
         box-sizing: border-box;
 
-        width: calc(100% - 5vw);
+        width: calc(100% - 48px);
 
-        max-width: 88em;
+        max-width: none;
 
         height: auto !important;
 
@@ -962,16 +972,25 @@ a[data-role="button"],
 
         padding: 1.5em;
 
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28),
-        inset 0 2px 2px rgba(255, 255, 255, 0.08),
-        0 1.5em 5em rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(229, 240, 255, 0.14);
+
+        border-radius: 32px;
+
+        background: linear-gradient(150deg, rgba(40, 49, 62, 0.92), rgba(14, 19, 27, 0.96));
+
+        box-shadow: 0 1.5em 5em rgba(0, 0, 0, 0.4);
+
+        backdrop-filter: blur(24px) saturate(65%);
 
     }
 
 
     /* Poster and title share row one; the third child MUST span the next row. */
 
-    .detailPagePrimaryContainer {
+    .detailPagePrimaryContainer,
+    .cinemaDetailHero {
+
+        position: relative;
 
         display: grid !important;
 
@@ -1006,14 +1025,16 @@ a[data-role="button"],
 
             border-radius: 24px;
 
-            background-image: linear-gradient(90deg, rgba(12, 15, 20, 0.55), rgba(12, 15, 20, 0.8)),
+            background-color: #111923;
+
+            background-image: linear-gradient(90deg, rgba(14, 19, 27, 0.78), rgba(14, 19, 27, 0.92)),
             var(--detail-artwork, none);
 
             background-size: cover;
 
             background-position: center;
 
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+            box-shadow: inset 0 0 0 1px rgba(229, 240, 255, 0.14);
 
             pointer-events: none;
 
@@ -1031,7 +1052,8 @@ a[data-role="button"],
     }
 
 
-    .detailPagePrimaryContainer > .detailImageContainer {
+    .detailPagePrimaryContainer > .detailImageContainer,
+    .cinemaDetailHero > .detailImageContainer {
 
         grid-area: 1 / 1;
 
@@ -1082,6 +1104,10 @@ a[data-role="button"],
     .detailImageContainer .cardScalable {
 
         margin: 0;
+
+        overflow: hidden;
+
+        border-radius: 18px;
 
     }
 
@@ -1178,7 +1204,7 @@ a[data-role="button"],
 
         font-weight: 700;
 
-        color: #fff;
+        color: #f0f5fc;
 
     }
 
@@ -1189,7 +1215,7 @@ a[data-role="button"],
 
         font-weight: 400;
 
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(225, 237, 250, 0.7);
 
     }
 
@@ -1217,22 +1243,25 @@ a[data-role="button"],
 
     .detailButton {
 
-        @include glass-flat(999px, 0.08);
-
-
         min-width: 2.8em;
 
         min-height: 2.8em;
 
-        color: #fff;
+        border-radius: 999px;
+
+        background: rgba(31, 41, 54, 0.92);
+
+        box-shadow: inset 0 0 0 1px rgba(229, 240, 255, 0.14);
+
+        color: #e1edfa;
 
 
         &:hover,
         &:focus-visible {
 
-            background-color: rgba(255, 255, 255, 0.25);
+            background-color: #344358;
 
-            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline: 2px solid #e1edfa;
 
             outline-offset: 3px;
 
@@ -1245,11 +1274,21 @@ a[data-role="button"],
 
         flex-direction: row;
 
-        background-color: rgba(196, 163, 92, 0.65);
+        background-color: #e1edfa;
 
-        box-shadow: inset 0 0 0 1px rgba(255, 226, 161, 0.6);
+        color: #e1edfa;
+
+        box-shadow: inset 0 0 0 1px rgba(229, 240, 255, 0.14);
 
         padding-inline: 1.4em !important;
+
+        &:hover,
+        &:focus-visible {
+
+            background-color: #fff;
+
+            color: #e1edfa;
+        }
 
 
         &::after {
@@ -1338,12 +1377,21 @@ a[data-role="button"],
 
     .detailSectionContent,
     .itemDetailsGroup:not(:empty),
-    .trackSelections {
+    .trackSelections,
+    .collectionItems > .verticalSection,
+    .detailVerticalSection {
 
-        @include glass-flat(20px, 0.035);
-
+        box-sizing: border-box;
 
         padding: 1.25em 1.5em;
+
+        border: 1px solid rgba(229, 240, 255, 0.1);
+
+        border-radius: 20px;
+
+        background: rgba(14, 21, 30, 0.78);
+
+        box-shadow: none;
 
     }
 
@@ -1352,6 +1400,24 @@ a[data-role="button"],
 
         line-height: 1.65;
 
+        color: rgba(225, 237, 250, 0.85);
+
+        overflow-wrap: anywhere;
+
+    }
+
+
+    .overview {
+
+        line-height: 1.75;
+    }
+
+
+    .itemGenres,
+    .tagline,
+    .sectionTitle {
+
+        color: #e1edfa;
     }
 
 
@@ -1401,17 +1467,17 @@ a[data-role="button"],
 
         flex-wrap: wrap;
 
-        align-items: center;
+        align-items: stretch;
 
-        align-content: center;
+        align-content: flex-start;
 
-        justify-content: center;
+        justify-content: flex-start;
 
         gap: 1em 1.5em;
 
         max-width: none;
 
-        text-align: center;
+        text-align: start;
 
         box-sizing: border-box;
 
@@ -1433,9 +1499,9 @@ a[data-role="button"],
 
         min-width: 0;
 
-        max-width: 30em;
+        max-width: 100%;
 
-        align-self: center;
+        align-self: stretch;
 
     }
 
@@ -1446,6 +1512,12 @@ a[data-role="button"],
 
         margin: 0 0 0.35em;
 
+        color: rgba(225, 237, 250, 0.72);
+
+        font-size: 0.9em;
+
+        font-weight: 500;
+
     }
 
 
@@ -1455,10 +1527,56 @@ a[data-role="button"],
 
         width: 100%;
 
-        text-align: center;
+        min-height: 2.8em;
 
-        text-align-last: center;
+        padding-block: 0.65em;
 
+        padding-inline: 1em 2.5em;
+
+        border: 1px solid rgba(229, 240, 255, 0.18);
+
+        border-radius: 999px;
+
+        background: #1b2634;
+
+        backdrop-filter: none;
+
+        color: #e1edfa;
+
+        text-align: start;
+
+        text-align-last: start;
+
+        text-overflow: ellipsis;
+
+        &:focus {
+
+            border-color: #e1edfa !important;
+
+            background: #253447;
+
+            box-shadow: 0 0 0 2px rgba(225, 237, 250, 0.25);
+        }
+
+        > option {
+
+            background: #1b2634;
+
+            color: #e1edfa;
+        }
+
+    }
+
+
+    .trackSelections .selectArrowContainer {
+
+        top: auto;
+
+        bottom: 0.7em;
+
+        inset-inline-end: 0.8em;
+
+        color: #e1edfa;
     }
 
 
@@ -1473,7 +1591,6 @@ a[data-role="button"],
 
     .collectionItems > .verticalSection,
     .detailVerticalSection {
-        @include glass-flat(22px, 0.045);
         min-width: 0;
         padding: 1em;
         margin: 0 0 1.25em;
@@ -1628,7 +1745,7 @@ a[data-role="button"],
 
         border-radius: 16px;
 
-        background-color: rgba(255, 255, 255, 0.045);
+        background-color: rgba(31, 41, 54, 0.7);
 
     }
 
@@ -1693,7 +1810,7 @@ a[data-role="button"],
 
         .detailPageWrapperContainer {
 
-            width: calc(100% - 1.5em);
+            width: calc(100% - 24px);
 
             padding: 0.8em;
 
@@ -1702,14 +1819,16 @@ a[data-role="button"],
         }
 
 
-        .detailPagePrimaryContainer {
+        .detailPagePrimaryContainer,
+        .cinemaDetailHero {
 
             grid-template-columns: minmax(0, 1fr) !important;
 
         }
 
 
-        .detailPagePrimaryContainer > .detailImageContainer {
+        .detailPagePrimaryContainer > .detailImageContainer,
+        .cinemaDetailHero > .detailImageContainer {
 
             display: none !important;
 
@@ -1722,6 +1841,13 @@ a[data-role="button"],
 
             padding: 1.5em !important;
 
+        }
+
+        .detailSectionContent,
+        .itemDetailsGroup:not(:empty),
+        .trackSelections {
+
+            padding: 1em;
         }
 
 
@@ -1771,6 +1897,115 @@ a[data-role="button"],
 
 }
 
+
+.modernAppLayout #itemDetailPage.cinemaDetailPage {
+    .detailPageWrapperContainer,
+    .detailPagePrimaryContainer,
+    .detailPagePrimaryContent,
+    .detailSection,
+    .detailPageSecondaryContainer {
+        position: relative !important;
+        inset: auto !important;
+        display: flex !important;
+        flex: 0 0 auto;
+        flex-direction: column;
+        align-items: stretch;
+        min-width: 0;
+        height: auto !important;
+        max-height: none !important;
+        contain: none !important;
+    }
+
+    .detailSection > :not(.hide),
+    .detailPageSecondaryContainer > :not(.hide) {
+        flex: 0 0 auto;
+    }
+
+    .detailPagePrimaryContainer::before {
+        content: none;
+    }
+
+    .cinemaDetailHero {
+        flex: 0 0 auto;
+        grid-template-rows: auto !important;
+        min-width: 0;
+    }
+
+    .detailRibbon > .infoWrapper,
+    .detailRibbon > .mainDetailButtons {
+        position: static !important;
+        inset: auto !important;
+        box-sizing: border-box;
+        width: 100% !important;
+        min-width: 0;
+        max-width: none;
+        height: auto !important;
+        margin-inline: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+    }
+
+    .nameContainer > .itemName,
+    .nameContainer > .parentName {
+        display: block !important;
+        visibility: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        opacity: 1 !important;
+    }
+
+    .cinemaDetailSummary {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        order: 0;
+        gap: 1.25em;
+
+        > :not(.hide) {
+            position: relative !important;
+            inset: auto !important;
+            grid-area: auto !important;
+            min-width: 0;
+            width: auto !important;
+            height: auto !important;
+            max-height: none !important;
+            margin: 0 !important;
+        }
+
+        @media (min-width: 62.5em) {
+            &:has(> .trackSelections:not(.hide)) {
+                grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            }
+        }
+    }
+
+    .cinemaDetailNavigation {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 0.5em;
+        margin-bottom: 1.25em;
+
+        > .button-flat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 44px;
+            height: 44px;
+            margin: 0;
+            padding: 0;
+            border: 1px solid rgba(229, 240, 255, 0.14);
+            border-radius: 14px;
+            background: rgba(14, 21, 30, 0.78);
+            color: #e1edfa;
+
+            &:hover,
+            &:focus-visible {
+                background: #e1edfa;
+                color: #111923;
+            }
+        }
+    }
+}
 
 /* The global backdrop should melt into the canvas as well */
 

@@ -41,6 +41,7 @@ import Dashboard from 'utils/dashboard';
 import Events from 'utils/events';
 import { getItemBackdropImageUrl } from 'utils/jellyfin-apiclient/backdropImage';
 import { OutboundWebSocketMessageType } from '@jellyfin/sdk/lib/websocket';
+import { prepareCinemaLayout } from '../../features/itemDetails/cinemaLayout';
 
 import 'elements/emby-itemscontainer/emby-itemscontainer';
 import 'elements/emby-checkbox/emby-checkbox';
@@ -2052,6 +2053,17 @@ export default function (view, params) {
         const apiClient = getApiClient();
 
         self._unmount = [];
+
+        if (layoutManager.modern) {
+            prepareCinemaLayout(view);
+            bindAll(view, '.btnCinemaBack', 'click', () => {
+                if (appRouter.canGoBack()) {
+                    appRouter.back();
+                } else {
+                    appRouter.goHome();
+                }
+            });
+        }
 
         bindAll(view, '.btnPlay', 'click', onPlayClick);
         bindAll(view, '.btnReplay', 'click', onPlayClick);

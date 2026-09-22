@@ -1,0 +1,108 @@
+.cinemaSearch {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.cinemaSearchIntro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: clamp(20px, 4vw, 56px);
+    border: 1px solid var(--cinema-border);
+    border-radius: 26px;
+    background: radial-gradient(ellipse at 85% 0, rgba(117, 151, 194, 0.2), transparent 65%), #111923;
+
+    > h2 {
+        margin: 0;
+        font-size: clamp(1.6rem, 3.4vw, 3.2rem);
+        font-weight: 600;
+        letter-spacing: -0.045em;
+        line-height: 1.15;
+    }
+
+    > p {
+        margin: 0;
+        color: var(--cinema-muted);
+        line-height: 1.6;
+    }
+}
+
+.cinemaSearchForm {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-height: 64px;
+    margin-top: 8px;
+    padding: 8px 18px;
+    border: 1px solid rgba(229, 240, 255, 0.25);
+    border-radius: 18px;
+    background: rgba(8, 12, 18, 0.6);
+
+    &:focus-within {
+        border-color: #e1edfa;
+        box-shadow: 0 0 0 3px rgba(225, 237, 250, 0.1);
+    }
+
+    > input {
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        padding: 12px 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #f6f8fc;
+        font: inherit;
+        font-size: 1.05rem;
+
+        &::placeholder {
+            color: var(--cinema-muted);
+            opacity: 1;
+        }
+
+        &::-webkit-search-cancel-button {
+            appearance: none;
+        }
+    }
+
+    > svg,
+    > button {
+        flex: 0 0 auto;
+    }
+}
+
+.cinemaSearchFilters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    [aria-current="page"] {
+        border-color: #e1edfa;
+        background: #e1edfa;
+        color: #111923;
+    }
+}
+
+.cinemaSearchResults {
+    min-width: 0;
+}
+
+@media (max-width: 700px) {
+    .cinemaSearchIntro {
+        gap: 14px;
+        padding: 24px 16px;
+        border-radius: 20px;
+    }
+
+    .cinemaSearchForm {
+        gap: 8px;
+        min-height: 56px;
+        padding-inline: 12px;
+    }
+}

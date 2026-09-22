@@ -22,9 +22,10 @@ export const Component = () => {
     const [ isDrawerActive, setIsDrawerActive ] = useState(false);
     const { user } = useApi();
     const location = useLocation();
+    const isCinemaPage = ['/home', '/details', '/search', '/userprofile'].includes(location.pathname);
 
     const isMediumScreen = useMediaQuery((t: Theme) => t.breakpoints.up('md'));
-    const isDrawerAvailable = isDrawerPath(location.pathname) && Boolean(user) && !isMediumScreen;
+    const isDrawerAvailable = !isCinemaPage && isDrawerPath(location.pathname) && Boolean(user) && !isMediumScreen;
     const isDrawerOpen = isDrawerActive && isDrawerAvailable;
 
     const onToggleDrawer = useCallback(() => {
@@ -34,6 +35,7 @@ export const Component = () => {
     return (
         <LibraryProvider>
             <Box
+                className='modernAppLayout'
                 sx={{
                     position: 'relative',
                     display: 'flex',
@@ -51,14 +53,14 @@ export const Component = () => {
                 }}
             >
                 <StrictMode>
-                    <OffsetAppBar dense>
+                    {!isCinemaPage && <OffsetAppBar dense>
                         <AppToolbar
                             isDrawerAvailable={!isMediumScreen && isDrawerAvailable}
                             isDrawerOpen={isDrawerOpen}
                             onDrawerButtonClick={onToggleDrawer}
                         />
                         {isLibraryPath(location.pathname) && <LibraryToolbar />}
-                    </OffsetAppBar>
+                    </OffsetAppBar>}
 
                     {
                         isDrawerAvailable && (
