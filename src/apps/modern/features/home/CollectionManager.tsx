@@ -3,7 +3,7 @@ import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-ite
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import globalize from 'lib/globalize';
 
@@ -43,6 +43,8 @@ export default function CollectionManager({ scope, options, onClose }: Readonly<
     options: CollectionEditorOptions;
     onClose: () => void;
 }>) {
+    const itemsRef = useRef<HTMLDivElement>(null);
+    const collectionsRef = useRef<HTMLDivElement>(null);
     const [ selected, setSelected ] = useState<BaseItemDto[]>(options.item ? [options.item] : []);
     const [ collectionId, setCollectionId ] = useState(options.collectionId || '');
     const [ createNew, setCreateNew ] = useState(!options.item && !options.collectionId);
@@ -118,7 +120,7 @@ export default function CollectionManager({ scope, options, onClose }: Readonly<
                         {!options.collectionId && !createNew && (
                             <>
                                 <RequestState pending={collections.isPending} error={collections.isError} retry={retryCollections} />
-                                <div className='cinemaPickerResults' role='radiogroup' aria-label={globalize.translate('Collections')}>
+                                <div ref={collectionsRef} className='cinemaPickerResults' role='radiogroup' aria-label={globalize.translate('Collections')}>
                                     {collections.data?.pages.flatMap(page => page.Items || []).map(item => (
                                         <label key={item.Id} className='cinemaPickerItem'>
                                             <input type='radio' name='collection' value={item.Id} checked={collectionId === item.Id}
@@ -126,7 +128,7 @@ export default function CollectionManager({ scope, options, onClose }: Readonly<
                                             <span>{item.Name}</span>
                                         </label>
                                     ))}
-                                    <InfiniteScroll query={collections} queryKey={JSON.stringify(scope)} />
+                                    <InfiniteScroll query={collections} queryKey={JSON.stringify(scope)} itemsRef={collectionsRef} />
                                 </div>
                             </>
                         )}
@@ -155,11 +157,11 @@ export default function CollectionManager({ scope, options, onClose }: Readonly<
                         </label>
                         <RequestState pending={items.isPending} error={items.isError} retry={retryItems}
                             empty={!items.isPending && !items.hasNextPage && !items.data?.pages.some(page => page.Items?.length)} />
-                        <div className='cinemaPickerResults'>
+                        <div ref={itemsRef} className='cinemaPickerResults'>
                             {items.data?.pages.flatMap(page => page.Items || []).map(item => (
                                 <PickerItem key={item.Id} item={item} checked={selected.some(value => value.Id === item.Id)} toggle={toggle} disabled={pending} />
                             ))}
-                            <InfiniteScroll query={items} queryKey={JSON.stringify([scope, searchTerm])} />
+                            <InfiniteScroll query={items} queryKey={JSON.stringify([scope, searchTerm])} itemsRef={itemsRef} />
                         </div>
                         {failed && <p role='alert'>{globalize.translate('CinemaSaveError')}</p>}
                         {invalidSubmission && !canSubmit && <p role='alert'>{globalize.translate('CinemaCompleteCollectionForm')}</p>}

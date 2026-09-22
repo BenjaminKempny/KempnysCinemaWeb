@@ -1,4 +1,4 @@
-import React, { act, StrictMode } from 'react';
+import React, { act, createRef, StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -52,6 +52,19 @@ function latestObserver() {
     return observers[observers.length - 1];
 }
 
+function renderCards(count = 6) {
+    const itemsRef = createRef<HTMLDivElement>();
+    act(() => root.render(
+        <StrictMode>
+            <div ref={itemsRef}>
+                {Array.from({ length: count }, (_, index) => <article key={index}><button>Movie {index}</button></article>)}
+            </div>
+            <InfiniteScroll query={query} queryKey='movies' itemsRef={itemsRef} />
+        </StrictMode>
+    ));
+    return itemsRef.current?.lastElementChild;
+}
+
 beforeEach(() => {
     vi.stubGlobal('IntersectionObserver', TestObserver);
     Object.defineProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT', { value: true, configurable: true });
@@ -75,6 +88,77 @@ afterEach(() => {
 });
 
 describe('cinema infinite scroll', () => {
+    it('loads from the last visible card when nearest-focus scrolling leaves the sentinel clipped', () => {
+        const lastCard = renderCards();
+        const sentinelObserver = [...observers].reverse().find(observer => observer.observe.mock.calls[0]?.[0].getAttribute('aria-hidden') === 'true');
+        const cardObserver = [...observers].reverse().find(observer => observer.observe.mock.calls[0]?.[0] === lastCard);
+        expect(cardObserver).toBeDefined();
+        sentinelObserver?.intersect(false);
+        expect(query.fetchNextPage).not.toHaveBeenCalled();
+        cardObserver?.intersect(true);
+        expect(query.fetchNextPage).toHaveBeenCalledOnce();
+        sentinelObserver?.intersect(true);
+        cardObserver?.intersect(true);
+        expect(query.fetchNextPage).toHaveBeenCalledOnce();
+    });
+
+    it('observes the new last card after appending a page without losing the current focus', () => {
+        const lastCard = renderCards();
+        const firstObserver = latestObserver();
+        const focused = lastCard?.querySelector('button');
+        act(() => focused?.focus());
+        firstObserver.intersect(true);
+        expect(query.fetchNextPage).toHaveBeenCalledOnce();
+        query = { ...query, data: { pages: [{}, {}] } };
+        const nextLastCard = renderCards(12);
+        expect(firstObserver.disconnect).toHaveBeenCalled();
+        expect(latestObserver().observe).toHaveBeenCalledWith(nextLastCard);
+        expect(document.activeElement).toBe(focused);
+        latestObserver().intersect(false);
+        expect(query.fetchNextPage).toHaveBeenCalledOnce();
+        latestObserver().intersect(true);
+        expect(query.fetchNextPage).toHaveBeenCalledTimes(2);
+    });
+
+    it('observes the last section for paginated genre rows without a separate items container', () => {
+        act(() => root.render(<>
+            <section><button>Last genre</button></section>
+            <InfiniteScroll query={query} queryKey='genres' />
+        </>));
+        expect(latestObserver().observe).toHaveBeenCalledWith(container.querySelector('section'));
+        latestObserver().intersect(true);
+        expect(query.fetchNextPage).toHaveBeenCalledOnce();
+    });
+
+    it('observes the last item rather than the sentinel inside a nested picker grid', () => {
+        const itemsRef = createRef<HTMLDivElement>();
+        act(() => root.render(
+            <div ref={itemsRef}>
+                <label><input type='checkbox' />Movie</label>
+                <InfiniteScroll query={query} queryKey='picker' itemsRef={itemsRef} />
+            </div>
+        ));
+        const cardObserver = latestObserver();
+        expect(cardObserver.root).toBeNull();
+        expect(cardObserver.observe).toHaveBeenCalledWith(container.querySelector('label'));
+        cardObserver.intersect(false);
+        expect(query.fetchNextPage).not.toHaveBeenCalled();
+        cardObserver.intersect(true);
+        expect(query.fetchNextPage).toHaveBeenCalledOnce();
+        act(() => root.render(null));
+        expect(cardObserver.disconnect).toHaveBeenCalled();
+    });
+
+    it('does not fetch hidden last items or retry errors when the last item is visible', () => {
+        renderCards();
+        latestObserver().intersect(false);
+        expect(query.fetchNextPage).not.toHaveBeenCalled();
+        query = { ...query, isError: true };
+        renderCards();
+        latestObserver().intersect(true);
+        expect(query.fetchNextPage).not.toHaveBeenCalled();
+    });
+
     it('waits until near the viewport, respecting nested clipping with the viewport root', () => {
         render();
         expect(latestObserver().root).toBeNull();

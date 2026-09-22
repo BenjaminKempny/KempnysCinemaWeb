@@ -147,10 +147,12 @@ afterEach(() => {
 });
 
 describe('collection editor', () => {
-    it('keeps both pagination sentinels inside their bounded scrolling pickers', () => {
+    it('observes both sentinels and the last items inside their bounded scrolling pickers', () => {
         requests.hasMore = true;
         renderManager({ item: first });
-        expect(observedTargets).toHaveLength(2);
+        expect(observedTargets).toHaveLength(4);
+        expect(observedTargets.filter(target => target.getAttribute('aria-hidden') === 'true')).toHaveLength(2);
+        expect(observedTargets.filter(target => target.matches('label.cinemaPickerItem'))).toHaveLength(2);
         expect(observedTargets.every(target => target.parentElement?.classList.contains('cinemaPickerResults'))).toBe(true);
         expect(observedTargets[0].parentElement?.getAttribute('role')).toBe('radiogroup');
         expect(requests.nextItems).not.toHaveBeenCalled();

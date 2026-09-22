@@ -116,6 +116,7 @@ export function Catalog({ scope, genreId, collectionId, title, onManage, onRemov
     onManage?: ManageCollection;
     onRemove?: (item: BaseItemDto) => void;
 }>) {
+    const itemsRef = useRef<HTMLDivElement>(null);
     const [ sort, setSort ] = useState('name');
     const sortBy = { name: ItemSortBy.SortName, added: ItemSortBy.DateCreated, year: ItemSortBy.PremiereDate }[sort] || ItemSortBy.SortName;
     const query = useCinemaItems(scope, {
@@ -145,11 +146,11 @@ export function Catalog({ scope, genreId, collectionId, title, onManage, onRemov
             </div>
             <RequestState pending={query.isLoading} error={query.isError} retry={retry}
                 empty={query.isSuccess && !items.length && !query.hasNextPage} />
-            <div className='cinemaGrid'>
+            <div ref={itemsRef} className='cinemaGrid'>
                 {items.map(item => <MediaCard key={item.Id} item={item}
                     onAdd={onManage ? onAdd : undefined} onRemove={onRemove} />)}
             </div>
-            <InfiniteScroll query={query} queryKey={JSON.stringify([scope, genreId, collectionId, sort])} />
+            <InfiniteScroll query={query} queryKey={JSON.stringify([scope, genreId, collectionId, sort])} itemsRef={itemsRef} />
         </section>
     );
 }
@@ -212,6 +213,7 @@ export function Genres({ scope, onManage }: Readonly<{ scope: CinemaScope; onMan
 }
 
 export function Collections({ scope, onManage }: Readonly<{ scope: CinemaScope; onManage?: ManageCollection }>) {
+    const itemsRef = useRef<HTMLDivElement>(null);
     const query = useCinemaCollections(scope);
     const items = query.data?.pages.flatMap(page => page.Items || []) || [];
     const { refetch, fetchNextPage, isFetchNextPageError } = query;
@@ -227,11 +229,11 @@ export function Collections({ scope, onManage }: Readonly<{ scope: CinemaScope; 
             </div>
             <RequestState pending={query.isLoading} error={query.isError} retry={retry}
                 empty={query.isSuccess && !items.length && !query.hasNextPage} />
-            <div className='cinemaGrid'>
+            <div ref={itemsRef} className='cinemaGrid'>
                 {items.map(item => <MediaCard key={item.Id} item={item}
                     to={cinemaUrl(scope.media, 'collections', { collection: item.Id, title: item.Name || '' })} />)}
             </div>
-            <InfiniteScroll query={query} queryKey={JSON.stringify(scope)} />
+            <InfiniteScroll query={query} queryKey={JSON.stringify(scope)} itemsRef={itemsRef} />
         </>
     );
 }

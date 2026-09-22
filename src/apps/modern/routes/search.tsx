@@ -2,7 +2,7 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models/base
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import SearchRounded from '@mui/icons-material/SearchRounded';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import React, { type ChangeEvent, type FormEvent, useCallback, useRef } from 'react';
+import React, { type ChangeEvent, type FormEvent, type RefObject, useCallback, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDebounceValue } from 'usehooks-ts';
 
@@ -18,9 +18,9 @@ import { getCinemaSearchQuery, getCinemaSuggestionsQuery, readSearchScope, SEARC
 
 import '../features/search/search.scss';
 
-function SearchCards({ items }: Readonly<{ items: BaseItemDto[] }>) {
+function SearchCards({ items, itemsRef }: Readonly<{ items: BaseItemDto[]; itemsRef?: RefObject<HTMLDivElement> }>) {
     const { __legacyApiClient__: client } = useApi();
-    return <div className='cinemaGrid'>
+    return <div ref={itemsRef} className='cinemaGrid'>
         {items.map(item => <MediaCard key={item.Id} item={item}
             to={appRouter.getRouteUrl(item, { serverId: client?.serverId() }).replace(/^#/, '')} />)}
     </div>;
@@ -42,6 +42,7 @@ function Suggestions() {
 }
 
 function Results({ term }: Readonly<{ term: string }>) {
+    const itemsRef = useRef<HTMLDivElement>(null);
     const { api, user } = useApi();
     const [params] = useSearchParams();
     const scope = readSearchScope(params);
@@ -64,9 +65,9 @@ function Results({ term }: Readonly<{ term: string }>) {
             <SearchRounded aria-hidden='true' />
             <h2>{globalize.translate('SearchResultsEmpty', term)}</h2>
         </div>}
-        <SearchCards items={unique} />
+        <SearchCards items={unique} itemsRef={itemsRef} />
         {items.length > 0 && <RequestState pending={query.isFetchingNextPage} error={query.isError} retry={retry} />}
-        <InfiniteScroll query={query} queryKey={JSON.stringify([api?.basePath, user?.Id, term, scope])} />
+        <InfiniteScroll query={query} queryKey={JSON.stringify([api?.basePath, user?.Id, term, scope])} itemsRef={itemsRef} />
     </section>;
 }
 
