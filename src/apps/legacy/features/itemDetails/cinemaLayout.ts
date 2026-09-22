@@ -21,6 +21,9 @@ export function prepareCinemaLayout(page: HTMLElement) {
     hero.appendChild(poster);
     hero.appendChild(ribbon);
 
+    // The cinema hero owns the poster; legacy mobile CSS must not add one over the text.
+    ribbon.querySelector('.infoWrapper > .detailImageContainer')?.remove();
+
     const summary = page.ownerDocument.createElement('div');
     summary.className = 'cinemaDetailSummary';
     section.insertBefore(summary, section.firstChild);

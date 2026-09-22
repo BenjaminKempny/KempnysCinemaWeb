@@ -994,7 +994,7 @@ a[data-role="button"],
 
         display: grid !important;
 
-        grid-template-columns: 14em minmax(0, 1fr) !important;
+        grid-template-columns: 18em minmax(0, 1fr) !important;
 
         grid-template-rows: auto auto !important;
 
@@ -1931,6 +1931,47 @@ a[data-role="button"],
         min-width: 0;
     }
 
+    .cinemaDetailHero > .detailImageContainer {
+        position: relative !important;
+        inset: auto !important;
+        grid-area: 1 / 1 !important;
+        align-self: stretch !important;
+        box-sizing: border-box;
+        width: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        .card {
+            position: relative !important;
+            inset: auto !important;
+            float: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            transform: none !important;
+        }
+
+        .card,
+        .cardBox,
+        .cardScalable {
+            height: 100% !important;
+            max-height: none !important;
+            margin: 0 !important;
+        }
+    }
+
+    .cinemaDetailHero > .detailRibbon {
+        position: relative !important;
+        grid-area: 1 / 2 !important;
+        box-sizing: border-box;
+        width: auto !important;
+
+        @media (max-width: 50em) {
+            grid-area: 1 / 1 !important;
+        }
+    }
+
     .detailRibbon > .infoWrapper,
     .detailRibbon > .mainDetailButtons {
         position: static !important;
@@ -1945,6 +1986,10 @@ a[data-role="button"],
         transform: none !important;
     }
 
+    .detailRibbon > .infoWrapper {
+        display: block !important;
+    }
+
     .nameContainer > .itemName,
     .nameContainer > .parentName {
         display: block !important;
@@ -1952,6 +1997,11 @@ a[data-role="button"],
         height: auto !important;
         max-height: none !important;
         opacity: 1 !important;
+    }
+
+    .nameContainer > h1.itemName,
+    .nameContainer > h1.parentName {
+        font-size: clamp(1.8em, 3.4vw, 3.4em) !important;
     }
 
     .cinemaDetailSummary {

@@ -63,10 +63,48 @@ describe('cinema layout constraints', () => {
             height: 'auto',
             contain: 'none'
         });
-        expect(declarations(`${prefix} .detailPagePrimaryContainer,\n${prefix} .cinemaDetailHero`, undefined, detailStyles).position).toBe('relative');
+        expect(declarations(`${prefix} .detailPagePrimaryContainer,\n${prefix} .cinemaDetailHero`, undefined, detailStyles)).toMatchObject({
+            position: 'relative',
+            'grid-template-columns': '16em minmax(0, 1fr)'
+        });
         const modernWrapper = '.modernAppLayout #itemDetailPage.itemDetailPage .detailPageWrapperContainer';
         expect(declarations(modernWrapper, undefined, detailStyles)['margin-block']).toBe('24px');
         expect(declarations(modernWrapper, '(max-width: 50em)', detailStyles)['margin-block']).toBe('12px');
+    });
+
+    it('keeps the poster and title in separate desktop columns and uses one column on mobile', () => {
+        const prefix = '.modernAppLayout #itemDetailPage.cinemaDetailPage .cinemaDetailHero';
+        expect(declarations(`${prefix} > .detailImageContainer`, undefined, detailStyles)).toMatchObject({
+            position: 'relative',
+            inset: 'auto',
+            'grid-area': '1/1',
+            'align-self': 'stretch',
+            width: 'auto',
+            height: 'auto',
+            'max-height': 'none',
+            margin: '0',
+            padding: '0'
+        });
+        expect(declarations(`${prefix} > .detailImageContainer .card`, undefined, detailStyles)).toMatchObject({
+            position: 'relative',
+            inset: 'auto',
+            float: 'none',
+            width: '100%',
+            'max-width': '100%',
+            transform: 'none'
+        });
+        expect(declarations(`${prefix} > .detailRibbon`, undefined, detailStyles)['grid-area']).toBe('1/2');
+        expect(declarations(`${prefix} > .detailRibbon`, '(max-width: 50em)', detailStyles)['grid-area']).toBe('1/1');
+    });
+
+    it('fills the hero height with the poster through every image wrapper', () => {
+        const prefix = '.modernAppLayout #itemDetailPage.cinemaDetailPage .cinemaDetailHero > .detailImageContainer';
+        const selector = ['.card', '.cardBox', '.cardScalable'].map(wrapper => `${prefix} ${wrapper}`).join(',\n');
+        expect(declarations(selector, undefined, detailStyles)).toMatchObject({
+            height: '100%',
+            'max-height': 'none',
+            margin: '0'
+        });
     });
 
     it('aligns detail information and buttons without legacy poster offsets', () => {
@@ -89,6 +127,13 @@ describe('cinema layout constraints', () => {
                 expect(declaration.important).toBe(true);
             });
         });
+        const infoSelector = `${prefix} .detailRibbon > .infoWrapper`;
+        expect(declarations(infoSelector, undefined, detailStyles).display).toBe('block');
+        detailStyles.walkRules(infoSelector, rule => {
+            rule.walkDecls('display', declaration => {
+                expect(declaration.important).toBe(true);
+            });
+        });
     });
 
     it('keeps textual detail titles visible even when logo styles hide them', () => {
@@ -103,6 +148,14 @@ describe('cinema layout constraints', () => {
         });
         detailStyles.walkRules(selector, rule => {
             rule.walkDecls(declaration => {
+                expect(declaration.important).toBe(true);
+            });
+        });
+        const headingSelector = `${prefix} .nameContainer > h1.itemName,\n${prefix} .nameContainer > h1.parentName`;
+        expect(declarations(headingSelector, undefined, detailStyles)['font-size'])
+            .toBe('clamp(1.8em, 3.4vw, 3.4em)');
+        detailStyles.walkRules(headingSelector, rule => {
+            rule.walkDecls('font-size', declaration => {
                 expect(declaration.important).toBe(true);
             });
         });

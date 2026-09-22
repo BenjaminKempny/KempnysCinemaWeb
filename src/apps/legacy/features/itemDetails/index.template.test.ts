@@ -79,4 +79,14 @@ describe('item detail template', () => {
         select.dispatchEvent(new Event('change'));
         expect(onChange).toHaveBeenCalledOnce();
     });
+
+    it('renders only the hero poster, never a second mobile poster inside the text', () => {
+        expect(page.querySelectorAll('.detailImageContainer')).toHaveLength(2);
+
+        prepareCinemaLayout(page);
+
+        expect(page.querySelectorAll('.detailImageContainer')).toHaveLength(1);
+        expect(page.querySelector('.cinemaDetailHero > .detailImageContainer')).not.toBeNull();
+        expect(page.querySelector('.infoWrapper .detailImageContainer')).toBeNull();
+    });
 });
