@@ -78,6 +78,23 @@ export function DisplayPreferences({ onChange, values }: Readonly<DisplayPrefere
 
             <FormControl fullWidth>
                 <FormControlLabel
+                    aria-describedby='display-settings-light-appearance-description'
+                    control={
+                        <Checkbox
+                            checked={values.enableLightAppearance}
+                            onChange={onChange}
+                        />
+                    }
+                    label={globalize.translate('CinemaLightAppearance')}
+                    name='enableLightAppearance'
+                />
+                <FormHelperText id='display-settings-light-appearance-description'>
+                    {globalize.translate('CinemaLightAppearanceHelp')}
+                </FormHelperText>
+            </FormControl>
+
+            <FormControl fullWidth>
+                <FormControlLabel
                     aria-describedby='display-settings-disable-css-description'
                     control={
                         <Checkbox

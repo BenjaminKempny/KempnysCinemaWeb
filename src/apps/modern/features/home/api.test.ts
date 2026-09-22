@@ -45,6 +45,11 @@ vi.mock('@jellyfin/sdk/lib/utils/api/collection-api', () => ({
     })
 }));
 vi.mock('hooks/useApi', () => ({ useApi: vi.fn() }));
+vi.mock('scripts/settings/userSettings', () => ({
+    currentSettings: { cinemaAppearance: () => 'dark', disableCollectionOperations: () => false },
+    disableCollectionOperations: () => false,
+    cinemaAppearance: () => 'dark'
+}));
 
 const api = new Api('https://cinema.example', { name: 'test', version: '1' }, { name: 'test', id: 'test' });
 const policy = { AuthenticationProviderId: '', PasswordResetProviderId: '' };

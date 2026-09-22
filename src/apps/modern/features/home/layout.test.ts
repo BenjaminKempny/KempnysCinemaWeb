@@ -22,14 +22,14 @@ function declarations(selector: string, media?: string, stylesheet = styles) {
 describe('cinema layout constraints', () => {
     it('uses explicit TV focus outlines and avoids competing scroll snap animations', () => {
         expect(declarations('.layout-tv .cinemaHome :focus,\n.layout-tv .cinemaDialog :focus')).toMatchObject({
-            outline: '3px solid #d4e8ff',
+            outline: '3px solid var(--cinema-focus)',
             'outline-offset': '3px'
         });
         expect(declarations('.layout-tv .cinemaRow')['scroll-snap-type']).toBe('none');
     });
 
     it('places TV card actions below the poster so directional navigation can reach them', () => {
-        expect(declarations('.layout-tv .cinemaCardPlay,\n.layout-tv .cinemaCardMenu')).toMatchObject({
+        expect(declarations('.layout-tv .cinemaCardMenu')).toMatchObject({
             position: 'relative',
             inset: 'auto',
             width: '44px',
@@ -57,7 +57,15 @@ describe('cinema layout constraints', () => {
             'grid-template-columns': '64px minmax(0, 1fr)',
             gap: '24px'
         });
-        expect(declarations('.cinemaSidebar')).toMatchObject({ position: 'sticky', width: '64px' });
+        // The rail is pinned to the viewport so it never shifts between cinema pages.
+        expect(declarations('.cinemaSidebar')).toMatchObject({
+            position: 'fixed',
+            top: '50%',
+            'inset-inline-start': '24px',
+            transform: 'translateY(-50%)',
+            width: '64px'
+        });
+        expect(declarations('.cinemaShell')['grid-column']).toBe('2');
     });
 
     it('retains mobile bottom navigation with space below the content', () => {

@@ -10,8 +10,8 @@ import { useDisplaySettingForm } from 'apps/modern/features/preferences/hooks/us
 import { LocalizationPreferences } from 'apps/modern/features/preferences/components/LocalizationPreferences';
 import { NextUpPreferences } from 'apps/modern/features/preferences/components/NextUpPreferences';
 import type { DisplaySettingsValues } from 'apps/modern/features/preferences/types/displaySettingsValues';
+import CinemaPage from 'apps/modern/features/home/CinemaPage';
 import LoadingComponent from 'components/loading/LoadingComponent';
-import Page from 'components/Page';
 import globalize from 'lib/globalize';
 
 export default function UserDisplayPreferences() {
@@ -40,21 +40,12 @@ export default function UserDisplayPreferences() {
         }
     }, [updateField, values]);
 
-    if (loading || !values) {
-        return <LoadingComponent />;
-    }
-
     return (
-        <Page
-            className='mainAnimatedPage libraryPage userPreferencesPage noSecondaryNavPage'
-            id='displayPreferencesPage'
-            title={globalize.translate('Display')}
-        >
-            <div className='settingsContainer padded-left padded-right padded-bottom-page'>
+        <CinemaPage title={globalize.translate('Display')} active='settings'>
+            {loading || !values ? <LoadingComponent /> : (
                 <form
-                    className='displayPreferencesForm'
+                    className='displayPreferencesForm cinemaSettingsForm'
                     onSubmit={handleSubmitForm}
-                    style={{ margin: 'auto' }}
                 >
                     <Stack className='displayPreferencesSections' spacing={4}>
                         <LocalizationPreferences
@@ -86,7 +77,7 @@ export default function UserDisplayPreferences() {
                         </Button>
                     </Stack>
                 </form>
-            </div>
-        </Page>
+            )}
+        </CinemaPage>
     );
 }

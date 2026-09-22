@@ -15,8 +15,8 @@ import {
     useCinemaLibraries
 } from 'apps/modern/features/home/librarySource';
 import type { CinemaMedia } from 'apps/modern/features/home/navigation';
+import CinemaPage from 'apps/modern/features/home/CinemaPage';
 import Loading from 'components/loading/LoadingComponent';
-import Page from 'components/Page';
 import { useApi } from 'hooks/useApi';
 import globalize from 'lib/globalize';
 import * as userSettings from 'scripts/settings/userSettings';
@@ -65,23 +65,20 @@ export default function HomePreferences() {
     const items = views.data?.Items || [];
 
     return (
-        <Page id='cinemaHomePreferencesPage' className='mainAnimatedPage libraryPage userPreferencesPage noSecondaryNavPage'
-            title={globalize.translate('Home')}>
-            <div className='settingsContainer padded-left padded-right padded-bottom-page padded-top'>
-                <Stack spacing={3} sx={{ maxWidth: '54em', margin: 'auto', padding: { xs: 2, md: 3 } }}>
-                    <Typography variant='h1'>{globalize.translate('CinemaMainLibraries')}</Typography>
-                    <Typography>{globalize.translate('CinemaLibraryPreferencesHelp')}</Typography>
-                    {(views.isPending || !api || !user?.Id || !serverId) && <Loading />}
-                    {views.isError && <Alert severity='error' action={<Button onClick={retry}>{globalize.translate('Retry')}</Button>}>
-                        {globalize.translate('CinemaLoadError')}
-                    </Alert>}
-                    {views.isSuccess && serverId && user?.Id && (['movies', 'series'] as const).map(media => (
-                        <LibrarySource key={`${serverId}:${user.Id}:${media}`} media={media} serverId={serverId}
-                            libraries={getCinemaLibraries(items, media)} />
-                    ))}
-                    <Button component={Link} to='/home'>{globalize.translate('Home')}</Button>
-                </Stack>
-            </div>
-        </Page>
+        <CinemaPage title={globalize.translate('Home')} active='settings'>
+            <Stack className='cinemaSettingsForm' spacing={3}>
+                <Typography variant='h2'>{globalize.translate('CinemaMainLibraries')}</Typography>
+                <Typography>{globalize.translate('CinemaLibraryPreferencesHelp')}</Typography>
+                {(views.isPending || !api || !user?.Id || !serverId) && <Loading />}
+                {views.isError && <Alert severity='error' action={<Button onClick={retry}>{globalize.translate('Retry')}</Button>}>
+                    {globalize.translate('CinemaLoadError')}
+                </Alert>}
+                {views.isSuccess && serverId && user?.Id && (['movies', 'series'] as const).map(media => (
+                    <LibrarySource key={`${serverId}:${user.Id}:${media}`} media={media} serverId={serverId}
+                        libraries={getCinemaLibraries(items, media)} />
+                ))}
+                <Button component={Link} to='/home'>{globalize.translate('Home')}</Button>
+            </Stack>
+        </CinemaPage>
     );
 }

@@ -1,4 +1,4 @@
-import React, { StrictMode, useCallback, useState } from 'react';
+import React, { StrictMode, useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { type Theme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -12,6 +12,8 @@ import { useApi } from 'hooks/useApi';
 
 import AppToolbar from './components/AppToolbar';
 import AppDrawer, { isDrawerPath } from './components/drawers/AppDrawer';
+import { isCinemaPath } from './features/home/navigation';
+import { useCinemaAppearance } from './features/home/settings';
 import LibraryToolbar from './features/libraries/components/LibraryToolbar';
 import { LibraryProvider } from './features/libraries/hooks/useLibrary';
 import { isLibraryPath } from './features/libraries/utils/path';
@@ -22,7 +24,16 @@ export const Component = () => {
     const [ isDrawerActive, setIsDrawerActive ] = useState(false);
     const { user } = useApi();
     const location = useLocation();
-    const isCinemaPage = ['/home', '/details', '/search', '/userprofile'].includes(location.pathname);
+    const isCinemaPage = isCinemaPath(location.pathname);
+    const appearance = useCinemaAppearance();
+
+    // The cinema background belongs to the document so no legacy theme backdrop
+    // shows through around the page or while a scroll container bounces.
+    useEffect(() => {
+        const { classList, dataset } = document.documentElement;
+        classList.toggle('cinemaAppearance', isCinemaPage);
+        dataset.cinemaAppearance = appearance;
+    }, [appearance, isCinemaPage]);
 
     const isMediumScreen = useMediaQuery((t: Theme) => t.breakpoints.up('md'));
     const isDrawerAvailable = !isCinemaPage && isDrawerPath(location.pathname) && Boolean(user) && !isMediumScreen;
@@ -83,7 +94,9 @@ export const Component = () => {
                         // the viewport would stretch this box instead of scrolling inside
                         // it — and the document itself does not scroll.
                         minHeight: 0,
-                        overflowY: 'auto',
+                        // Cinema pages are their own scroll container, so a second
+                        // one here would let the user scroll past the artwork.
+                        overflowY: isCinemaPage ? 'hidden' : 'auto',
                         overflowX: 'hidden'
                     }}
                 >

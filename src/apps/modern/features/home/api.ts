@@ -6,6 +6,7 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models/base
 import type { BaseItemDtoQueryResult } from '@jellyfin/sdk/lib/generated-client/models/base-item-dto-query-result';
 import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
 import type { CollectionCreationResult } from '@jellyfin/sdk/lib/generated-client/models/collection-creation-result';
+import type { UserDto } from '@jellyfin/sdk/lib/generated-client/models/user-dto';
 import { ImageType } from '@jellyfin/sdk/lib/generated-client/models/image-type';
 import { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models/item-sort-by';
 import { SortOrder } from '@jellyfin/sdk/lib/generated-client/models/sort-order';
@@ -24,6 +25,7 @@ import {
 } from '@tanstack/react-query';
 
 import { useApi } from 'hooks/useApi';
+import { currentSettings } from 'scripts/settings/userSettings';
 
 import {
     CINEMA_FIELDS,
@@ -238,6 +240,14 @@ export interface UpdateCinemaCollection {
     ids: string[];
 }
 
+/** Collection editing is fully disabled while the user opted out of collection operations. */
+function requireCollectionOperations(api: Api | undefined, user: UserDto | undefined) {
+    if (currentSettings.disableCollectionOperations()) {
+        throw new Error('Collection operations are disabled.');
+    }
+    return requireCollectionManager(api, user);
+}
+
 export function useCinemaCollectionMutations() {
     const { api, user } = useApi();
     const queryClient = useQueryClient();
@@ -247,7 +257,7 @@ export function useCinemaCollectionMutations() {
     ]);
     const create = useMutation({
         mutationFn: async ({ name, ids, enableMetadata }: CreateCinemaCollection): Promise<CollectionCreationResult> => {
-            const currentApi = requireCollectionManager(api, user);
+            const currentApi = requireCollectionOperations(api, user);
             if (!name.trim()) throw new Error('A collection name is required.');
             const response = await getCollectionApi(currentApi).createCollection({
                 name: name.trim(),
@@ -264,7 +274,7 @@ export function useCinemaCollectionMutations() {
     };
     const add = useMutation({
         mutationFn: async (params: UpdateCinemaCollection) => {
-            const currentApi = requireCollectionManager(api, user);
+            const currentApi = requireCollectionOperations(api, user);
             const response = await getCollectionApi(currentApi).addToCollection(updateParams(params));
             return response.data;
         },
@@ -272,7 +282,7 @@ export function useCinemaCollectionMutations() {
     });
     const remove = useMutation({
         mutationFn: async (params: UpdateCinemaCollection) => {
-            const currentApi = requireCollectionManager(api, user);
+            const currentApi = requireCollectionOperations(api, user);
             const response = await getCollectionApi(currentApi).removeFromCollection(updateParams(params));
             return response.data;
         },

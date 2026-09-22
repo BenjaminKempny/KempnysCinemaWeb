@@ -92,6 +92,7 @@ async function loadDisplaySettings({
         enableBlurHash: Boolean(settings.enableBlurhash()),
         enableFasterAnimation: Boolean(settings.enableFastFadein()),
         enableItemDetailsBanner: Boolean(settings.detailsBanner()),
+        enableLightAppearance: settings.cinemaAppearance() === 'light',
         enableLibraryBackdrops: Boolean(settings.enableBackdrops()),
         enableLibraryThemeSongs: Boolean(settings.enableThemeSongs()),
         enableLibraryThemeVideos: Boolean(settings.enableThemeVideos()),
@@ -139,6 +140,7 @@ async function saveDisplaySettings({
     userSettings.enableBlurhash(newDisplaySettings.enableBlurHash);
     userSettings.enableFastFadein(newDisplaySettings.enableFasterAnimation);
     userSettings.detailsBanner(newDisplaySettings.enableItemDetailsBanner);
+    userSettings.cinemaAppearance(newDisplaySettings.enableLightAppearance ? 'light' : 'dark');
     userSettings.enableBackdrops(newDisplaySettings.enableLibraryBackdrops);
     userSettings.enableThemeSongs(newDisplaySettings.enableLibraryThemeSongs);
     userSettings.enableThemeVideos(newDisplaySettings.enableLibraryThemeVideos);

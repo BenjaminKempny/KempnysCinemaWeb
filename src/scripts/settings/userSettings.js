@@ -277,6 +277,33 @@ export class UserSettings {
     }
 
     /**
+     * Get or set the 'Disable Collection Operations' state. When enabled every
+     * collection editing feature is hidden and only browsing remains available.
+     * @param {boolean|undefined} [val] - Flag to disable collection operations or undefined.
+     * @return {boolean} 'Disable Collection Operations' state.
+     */
+    disableCollectionOperations(val) {
+        if (val !== undefined) {
+            return this.set('disableCollectionOperations', val.toString(), false);
+        }
+
+        return toBoolean(this.get('disableCollectionOperations', false), false);
+    }
+
+    /**
+     * Get or set the appearance of the cinema interface.
+     * @param {string|undefined} [val] - 'light', 'dark' or undefined.
+     * @return {string} The cinema appearance.
+     */
+    cinemaAppearance(val) {
+        if (val !== undefined) {
+            return this.set('cinemaAppearance', val, false);
+        }
+
+        return this.get('cinemaAppearance', false) === 'light' ? 'light' : 'dark';
+    }
+
+    /**
      * Get or set 'Theme Videos' state.
      * @param {boolean|undefined} [val] - Flag to enable 'Theme Videos' or undefined.
      * @return {boolean} 'Theme Videos' state.
@@ -748,6 +775,8 @@ export const enableNextVideoInfoOverlay = currentSettings.enableNextVideoInfoOve
 export const enableVideoRemainingTime = currentSettings.enableVideoRemainingTime.bind(currentSettings);
 export const enableThemeSongs = currentSettings.enableThemeSongs.bind(currentSettings);
 export const enableGenreHome = currentSettings.enableGenreHome.bind(currentSettings);
+export const disableCollectionOperations = currentSettings.disableCollectionOperations.bind(currentSettings);
+export const cinemaAppearance = currentSettings.cinemaAppearance.bind(currentSettings);
 export const enableThemeVideos = currentSettings.enableThemeVideos.bind(currentSettings);
 export const enableFastFadein = currentSettings.enableFastFadein.bind(currentSettings);
 export const enableBlurhash = currentSettings.enableBlurhash.bind(currentSettings);

@@ -32,6 +32,11 @@ vi.mock('components/playback/playbackmanager', () => ({
 vi.mock('hooks/useApi', () => ({ useApi: () => ({}) }));
 vi.mock('components/layoutManager', () => ({ default: { tv: false } }));
 vi.mock('scripts/browser', () => ({ default: { tv: false } }));
+vi.mock('scripts/settings/userSettings', () => ({
+    currentSettings: { cinemaAppearance: () => 'dark', disableCollectionOperations: () => false },
+    disableCollectionOperations: () => false,
+    cinemaAppearance: () => 'dark'
+}));
 
 vi.mock('./MediaCard', async importOriginal => {
     const actual = await importOriginal<typeof import('./MediaCard')>();

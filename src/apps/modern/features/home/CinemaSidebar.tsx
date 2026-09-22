@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 
 import globalize from 'lib/globalize';
 
+import NavPill, { useNavPill } from './NavPill';
 import { cinemaUrl, type CinemaMedia, type CinemaView } from './navigation';
 
 export type CinemaDestination = 'search' | 'profile' | 'settings';
@@ -24,8 +25,10 @@ export default function CinemaSidebar({ media, view = 'all', active }: Readonly<
         { to: '/userprofile', label: 'Profile', icon: <PersonOutlineRounded />, active: active === 'profile' },
         { to: '/mypreferencesmenu', label: 'Settings', icon: <SettingsOutlined />, active: active === 'settings' }
     ];
+    const { containerRef, pillRef } = useNavPill<HTMLElement>(links.find(link => link.active)?.label, 'cinemaSidebar');
 
-    return <nav className='cinemaSidebar' data-focus-region='sidebar' aria-label={globalize.translate('CinemaNavigation')}>
+    return <nav ref={containerRef} className='cinemaSidebar' data-focus-region='sidebar' aria-label={globalize.translate('CinemaNavigation')}>
+        <NavPill pillRef={pillRef} />
         {links.map(link => <Link key={link.label} to={link.to} className='cinemaNavItem' aria-current={link.active ? 'page' : undefined}
             aria-label={globalize.translate(link.label)} title={globalize.translate(link.label)}>{link.icon}</Link>)}
     </nav>;

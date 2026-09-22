@@ -10,6 +10,11 @@ import { getKeyName, isInteractiveElement } from 'scripts/keyboardUtils';
 import CinemaDialog from './CinemaDialog';
 
 vi.mock('components/layoutManager', () => ({ default: { tv: true } }));
+vi.mock('scripts/settings/userSettings', () => ({
+    currentSettings: { cinemaAppearance: () => 'dark', disableCollectionOperations: () => false },
+    disableCollectionOperations: () => false,
+    cinemaAppearance: () => 'dark'
+}));
 vi.mock('scripts/browser', () => ({ default: { tv: true, hisense: false, vidaa: false } }));
 vi.mock('scripts/keyboardUtils', () => ({
     getKeyName: vi.fn(),

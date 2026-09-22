@@ -25,6 +25,9 @@ vi.mock('./features/libraries/hooks/useLibrary', () => ({
     LibraryProvider: ({ children }: PropsWithChildren) => <div>{children}</div>
 }));
 vi.mock('./features/libraries/utils/path', () => ({ isLibraryPath: () => false }));
+vi.mock('scripts/settings/userSettings', () => ({
+    currentSettings: { cinemaAppearance: () => 'dark', disableCollectionOperations: () => false }
+}));
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const routerFuture = { v7_startTransition: true, v7_relativeSplatPath: true };
@@ -52,7 +55,10 @@ describe('cinema application chrome', () => {
         });
     }
 
-    it.each(['/home', '/details?id=movie&serverId=server', '/details?id=episode', '/search', '/userprofile'])(
+    it.each([
+        '/home', '/details?id=movie&serverId=server', '/details?id=episode', '/search', '/userprofile',
+        '/mypreferencesmenu', '/mypreferencesdisplay', '/mypreferenceshome'
+    ])(
         'removes the legacy toolbar, its offset, and the drawer on %s',
         path => {
             render(path);
@@ -63,7 +69,7 @@ describe('cinema application chrome', () => {
         }
     );
 
-    it.each(['/mypreferenceshome', '/mypreferencesmenu'])('retains navigation on %s', path => {
+    it.each(['/mypreferencesplayback', '/dashboard'])('retains navigation on %s', path => {
         render(path);
         expect(container.querySelector('header')).not.toBeNull();
         expect(container.querySelector('[data-testid="toolbar"]')).not.toBeNull();

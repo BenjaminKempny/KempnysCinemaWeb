@@ -102,7 +102,7 @@ export function ContinueWatching({ scope }: Readonly<{ scope: CinemaScope }>) {
             <div className='cinemaSectionHeader'><h2 id='cinemaContinueTitle'>{globalize.translate('HeaderContinueWatching')}</h2></div>
             <RequestState pending={query.isLoading} error={query.isError} retry={retry} />
             <div className='cinemaRow focuscontainer-right'>
-                {query.data?.map(item => <MediaCard key={item.Id} item={item} wide />)}
+                {query.data?.map(item => <MediaCard key={item.Id} item={item} wide playOnSelect />)}
             </div>
         </section>
     );

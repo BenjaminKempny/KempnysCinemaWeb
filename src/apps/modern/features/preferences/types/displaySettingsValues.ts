@@ -7,6 +7,7 @@ export interface DisplaySettingsValues {
     enableBlurHash: boolean;
     enableFasterAnimation: boolean;
     enableItemDetailsBanner: boolean;
+    enableLightAppearance: boolean;
     enableLibraryBackdrops: boolean;
     enableLibraryThemeSongs: boolean;
     enableLibraryThemeVideos: boolean;

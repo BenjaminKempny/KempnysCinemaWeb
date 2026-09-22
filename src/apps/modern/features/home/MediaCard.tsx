@@ -96,9 +96,11 @@ export function RequestState({ pending, error, retry, empty }: Readonly<{
     return null;
 }
 
-export default function MediaCard({ item, wide = false, onAdd, onRemove, to }: Readonly<{
+export default function MediaCard({ item, wide = false, playOnSelect = false, onAdd, onRemove, to }: Readonly<{
     item: BaseItemDto;
     wide?: boolean;
+    /** Makes the whole card resume playback so the card is the only focusable target. */
+    playOnSelect?: boolean;
     onAdd?: (item: BaseItemDto) => void;
     onRemove?: (item: BaseItemDto) => void;
     to?: string;
@@ -115,22 +117,29 @@ export default function MediaCard({ item, wide = false, onAdd, onRemove, to }: R
         `S${item.ParentIndexNumber ?? '?'} E${item.IndexNumber ?? '?'} / ${item.Name || ''}` :
         item.ProductionYear?.toString();
 
+    const canPlay = playOnSelect && item.Type !== BaseItemKind.BoxSet;
+    const playLabel = globalize.translate(item.UserData?.PlaybackPositionTicks ? 'ButtonResume' : 'Play') + ': ' + title;
+    const face = (
+        <>
+            <Artwork item={item} wide={wide} className='cinemaCardImage' />
+            <div className='cinemaCardBody'>
+                <h3>{title}</h3>
+                {subtitle && <p>{subtitle}</p>}
+                {wide && isEpisode && !item.UserData?.PlaybackPositionTicks && <span className='cinemaEyebrow'>{globalize.translate('NextUp')}</span>}
+            </div>
+            {canPlay && <span className='cinemaCardPlay' aria-hidden='true'><PlayArrowRounded /></span>}
+        </>
+    );
+
     return (
         <article className={`cinemaCard${wide ? ' cinemaCard-wide' : ''}`}>
-            <Link to={to || detailsUrl} className='cinemaCardLink'>
-                <Artwork item={item} wide={wide} className='cinemaCardImage' />
-                <div className='cinemaCardBody'>
-                    <h3>{title}</h3>
-                    {subtitle && <p>{subtitle}</p>}
-                    {wide && isEpisode && !item.UserData?.PlaybackPositionTicks && <span className='cinemaEyebrow'>{globalize.translate('NextUp')}</span>}
-                </div>
-            </Link>
-            {wide && item.Type !== BaseItemKind.BoxSet && (
-                <button className='cinemaIconButton cinemaCardPlay' disabled={playback.isPending || !item.Id} onClick={onPlay}
-                    data-focus-key={`play:${item.Id}`}
-                    aria-label={globalize.translate(item.UserData?.PlaybackPositionTicks ? 'ButtonResume' : 'Play') + ': ' + title}>
-                    <PlayArrowRounded />
+            {canPlay ? (
+                <button type='button' className='cinemaCardLink cinemaCardLink-play' onClick={onPlay}
+                    disabled={playback.isPending || !item.Id} data-focus-key={`play:${item.Id}`} aria-label={playLabel}>
+                    {face}
                 </button>
+            ) : (
+                <Link to={to || detailsUrl} className='cinemaCardLink'>{face}</Link>
             )}
             {(onAdd || onRemove) && (
                 <button className='cinemaIconButton cinemaCardMenu' onClick={onMenu}

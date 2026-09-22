@@ -1991,5 +1991,9 @@
     "HlsAudioSeekStrategy": "Die verwendete Methode zum Vor- und Zurückspulen in HLS Streams.",
     "LabelHlsAudioSeekStrategy": "Audio Vorspul-Methode.",
     "LabelBitmapSubtitleAspectMode": "Bitmap Untertitel Seitenverhältnismodus",
-    "MessageItemMetadataLocked": "Die Metadaten des Elements sind gesperrt. Entsperre sie, bevor die Identifitätsfunktion genutzt wird."
+    "MessageItemMetadataLocked": "Die Metadaten des Elements sind gesperrt. Entsperre sie, bevor die Identifitätsfunktion genutzt wird.",
+    "CinemaDisableCollectionOperations": "Sammlungsoperationen deaktivieren",
+    "CinemaDisableCollectionOperationsHelp": "Sammlungen bleiben durchsuchbar, aber Erstellen, Bearbeiten sowie Hinzufügen und Entfernen von Titeln werden ausgeblendet.",
+    "CinemaLightAppearance": "Helles Design",
+    "CinemaLightAppearanceHelp": "Verwendet das helle Kino-Design anstelle des dunklen."
 }

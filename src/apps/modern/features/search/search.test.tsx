@@ -31,6 +31,11 @@ vi.mock('components/Page', () => ({
 }));
 vi.mock('components/backdrop/backdrop', () => ({ clearBackdrop: vi.fn() }));
 vi.mock('components/layoutManager', () => ({ default: { tv: false } }));
+vi.mock('scripts/settings/userSettings', () => ({
+    currentSettings: { cinemaAppearance: () => 'dark', disableCollectionOperations: () => false },
+    disableCollectionOperations: () => false,
+    cinemaAppearance: () => 'dark'
+}));
 vi.mock('components/playback/playbackmanager', () => ({ playbackManager: {} }));
 vi.mock('lib/globalize', () => ({
     default: { translate: (key: string, value?: string) => [key, value].filter(Boolean).join(': ') }

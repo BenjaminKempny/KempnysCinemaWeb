@@ -1,3 +1,5 @@
+@use "./features/home/cinemaTokens" as cinema;
+
 // Default MUI breakpoints
 // https://mui.com/material-ui/customization/breakpoints/#default-breakpoints
 $mui-bp-sm: 600px;
@@ -73,5 +75,28 @@ $mui-bp-xl: 1536px;
             width: 100%;
             background: linear-gradient(180deg, rgba(32, 32, 32, 0.6) 0%, rgba(32, 32, 32, 0.2) 4rem, rgba(0, 0, 0, 0) 50%);
         }
+    }
+}
+
+// Cinema pages own the whole viewport, so the legacy theme backdrop must never
+// peek through — not at the edges and not when a scroll container bounces.
+html.cinemaAppearance {
+    @include cinema.cinema-dark-tokens;
+
+    background-color: var(--cinema-page-base);
+
+    &[data-cinema-appearance="light"] {
+        @include cinema.cinema-light-tokens;
+    }
+
+    body,
+    .skinBody,
+    .modernAppLayout {
+        background: transparent;
+    }
+
+    .backgroundContainer {
+        background-color: var(--cinema-page-base);
+        background-image: var(--cinema-page-bg);
     }
 }

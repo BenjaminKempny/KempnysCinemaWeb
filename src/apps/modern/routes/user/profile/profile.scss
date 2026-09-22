@@ -1,10 +1,10 @@
 .cinemaProfile {
     width: 100%;
-    color: #e1edfa;
+    color: var(--cinema-text);
 
     .cinemaProfileIntro,
     .cinemaProfileHint {
-        color: rgba(225, 237, 250, 0.72);
+        color: var(--cinema-muted);
         line-height: 1.7;
     }
 
@@ -22,9 +22,9 @@
     .cinemaProfilePanel {
         min-width: 0;
         padding: clamp(20px, 3vw, 36px);
-        border: 1px solid rgba(229, 240, 255, 0.14);
+        border: 1px solid var(--cinema-border);
         border-radius: 20px;
-        background: linear-gradient(145deg, #111821, #0e131b);
+        background: var(--cinema-section-bg);
     }
 
     h2 {
@@ -49,7 +49,7 @@
         width: clamp(72px, 9vw, 112px);
         height: clamp(72px, 9vw, 112px);
         overflow: hidden;
-        border: 1px solid rgba(229, 240, 255, 0.14);
+        border: 1px solid var(--cinema-border);
         border-radius: 50%;
         font-size: 2.5rem;
 
@@ -60,7 +60,7 @@
     }
 
     .cinemaProfileEyebrow {
-        color: rgba(225, 237, 250, 0.6);
+        color: var(--cinema-muted);
         font-size: 0.8rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
@@ -84,10 +84,10 @@
             width: 100%;
             min-height: 48px;
             padding: 12px 16px;
-            border: 1px solid rgba(229, 240, 255, 0.14);
+            border: 1px solid var(--cinema-border);
             border-radius: 12px;
-            background: #0e131b;
-            color: #e1edfa;
+            background: var(--cinema-input-bg);
+            color: var(--cinema-text);
             font: inherit;
         }
     }
@@ -101,10 +101,10 @@
     .cinemaProfileButton {
         min-height: 46px;
         padding: 12px 18px;
-        border: 1px solid rgba(229, 240, 255, 0.14);
+        border: 1px solid var(--cinema-border);
         border-radius: 14px;
-        background: #111821;
-        color: #e1edfa;
+        background: var(--cinema-button-bg);
+        color: var(--cinema-text);
         font: inherit;
         cursor: pointer;
 
@@ -114,30 +114,30 @@
         }
 
         &:hover:not(:disabled) {
-            border-color: #e1edfa;
-            background: #24303e;
+            border-color: var(--cinema-accent);
+            background: var(--cinema-button-hover-bg);
         }
     }
 
     .cinemaProfileButtonPrimary {
-        background: #e1edfa;
-        color: #0e131b;
+        background: var(--cinema-accent);
+        color: var(--cinema-accent-text);
 
         &:hover:not(:disabled) {
-            background: #fff;
+            background: var(--cinema-accent-hover);
         }
     }
 
     button:focus-visible,
     input:focus-visible {
-        outline: 2px solid #e1edfa;
+        outline: 2px solid var(--cinema-focus);
         outline-offset: 4px;
     }
 
     .cinemaProfileConfirmation {
         margin-top: 24px;
         padding-top: 12px;
-        border-top: 1px solid rgba(229, 240, 255, 0.14);
+        border-top: 1px solid var(--cinema-border);
     }
 
     .cinemaProfileError {

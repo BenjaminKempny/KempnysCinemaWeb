@@ -13,7 +13,7 @@
     padding: clamp(20px, 4vw, 56px);
     border: 1px solid var(--cinema-border);
     border-radius: 26px;
-    background: radial-gradient(ellipse at 85% 0, rgba(117, 151, 194, 0.2), transparent 65%), #111923;
+    background: var(--cinema-section-bg), var(--cinema-shell-bg);
 
     > h2 {
         margin: 0;
@@ -40,13 +40,13 @@
     min-height: 64px;
     margin-top: 8px;
     padding: 8px 18px;
-    border: 1px solid rgba(229, 240, 255, 0.25);
+    border: 1px solid var(--cinema-border-strong);
     border-radius: 18px;
-    background: rgba(8, 12, 18, 0.6);
+    background: var(--cinema-rail-bg);
 
     &:focus-within {
-        border-color: #e1edfa;
-        box-shadow: 0 0 0 3px rgba(225, 237, 250, 0.1);
+        border-color: var(--cinema-accent);
+        box-shadow: 0 0 0 3px var(--cinema-focus-ring);
     }
 
     > input {
@@ -57,7 +57,7 @@
         border: 0;
         outline: 0;
         background: transparent;
-        color: #f6f8fc;
+        color: var(--cinema-text);
         font: inherit;
         font-size: 1.05rem;
 
@@ -83,9 +83,9 @@
     gap: 10px;
 
     [aria-current="page"] {
-        border-color: #e1edfa;
-        background: #e1edfa;
-        color: #111923;
+        border-color: var(--cinema-accent-border);
+        background: var(--cinema-accent);
+        color: var(--cinema-accent-text);
     }
 }
 

@@ -36,12 +36,12 @@ let client: QueryClient;
 let container: HTMLDivElement;
 let root: Root;
 
-function renderCard(item: BaseItemDto = episode) {
+function renderCard(item: BaseItemDto = episode, playOnSelect = true) {
     act(() => {
         root.render(
             <QueryClientProvider client={client}>
                 <MemoryRouter>
-                    <MediaCard item={item} wide />
+                    <MediaCard item={item} wide playOnSelect={playOnSelect} />
                 </MemoryRouter>
             </QueryClientProvider>
         );
@@ -49,7 +49,7 @@ function renderCard(item: BaseItemDto = episode) {
 }
 
 function getPlayButton() {
-    const button = container.querySelector<HTMLButtonElement>('.cinemaCardPlay');
+    const button = container.querySelector<HTMLButtonElement>('.cinemaCardLink-play');
     if (!button) {
         throw new Error('Missing playback button');
     }
@@ -97,7 +97,7 @@ describe('media card', () => {
         renderCard(item);
         expect(getPlayButton().getAttribute('aria-label')).toBe('Play: Example series');
         expect(container.textContent).toContain('NextUp');
-        expect(container.querySelector('a')?.getAttribute('href')).toBe('/details?id=episode&serverId=item-server');
+        expect(container.querySelector('a')).toBeNull();
 
         await play();
 
@@ -107,7 +107,7 @@ describe('media card', () => {
         });
     });
 
-    it('shows a playback failure without removing the details link', async () => {
+    it('shows a playback failure without disabling the card', async () => {
         playback.play.mockRejectedValue(new Error('Playback unavailable'));
         renderCard();
 
@@ -120,12 +120,12 @@ describe('media card', () => {
         });
 
         expect(getPlayButton().disabled).toBe(false);
-        expect(container.querySelector('a')).not.toBeNull();
     });
 
     it('renders the details link, episode subtitle and accessible playback progress', () => {
-        renderCard();
+        renderCard(episode, false);
 
+        expect(container.querySelector('.cinemaCardLink-play')).toBeNull();
         expect(container.querySelector('a')?.getAttribute('href')).toBe('/details?id=episode&serverId=current-server');
         expect(container.querySelector('h3')?.textContent).toBe('Example series');
         expect(container.textContent).toContain('S1 E2 / Pilot');
@@ -136,7 +136,7 @@ describe('media card', () => {
     });
 
     it.each([-10, 150])('bounds progress percentage %s', percentage => {
-        renderCard({ ...episode, UserData: { ...episode.UserData, Key: 'episode', PlayedPercentage: percentage } });
+        renderCard({ ...episode, UserData: { ...episode.UserData, Key: 'episode', PlayedPercentage: percentage } }, false);
         const progress = container.querySelector('progress');
         if (percentage < 0) {
             expect(progress).toBeNull();

@@ -27,7 +27,10 @@ vi.mock('hooks/api/useUserViews', () => ({
 }));
 vi.mock('scripts/settings/userSettings', () => ({
     get: mocks.getSetting,
-    set: mocks.setSetting
+    set: mocks.setSetting,
+    currentSettings: { cinemaAppearance: () => 'dark', disableCollectionOperations: () => false },
+    disableCollectionOperations: () => false,
+    cinemaAppearance: () => 'dark'
 }));
 vi.mock('lib/globalize', () => ({ default: { translate: (key: string) => key } }));
 vi.mock('components/Page', () => ({

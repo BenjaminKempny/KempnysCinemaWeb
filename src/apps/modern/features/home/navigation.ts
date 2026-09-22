@@ -21,3 +21,18 @@ export function cinemaUrl(media: CinemaMedia, view: CinemaView, detail?: { colle
     if (detail?.title) params.set('title', detail.title);
     return `/home?${params.toString()}`;
 }
+
+/** Routes that render the cinema UI and therefore hide the legacy app bar. */
+const CINEMA_PATHS = [
+    '/home',
+    '/details',
+    '/search',
+    '/userprofile',
+    '/mypreferencesmenu',
+    '/mypreferencesdisplay',
+    '/mypreferenceshome'
+];
+
+export function isCinemaPath(pathname: string) {
+    return CINEMA_PATHS.includes(pathname);
+}

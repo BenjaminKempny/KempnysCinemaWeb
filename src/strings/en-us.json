@@ -1991,5 +1991,9 @@
     "LabelPlayerSizes": "Player sizes",
     "LabelPlaybackQuality": "Frame dropped / corrupted",
     "AudioLanguages": "Audio languages",
-    "SubtitleLanguages": "Subtitle languages"
+    "SubtitleLanguages": "Subtitle languages",
+    "CinemaDisableCollectionOperations": "Disable collection operations",
+    "CinemaDisableCollectionOperationsHelp": "Collections stay browsable, but creating, editing, adding and removing titles is hidden.",
+    "CinemaLightAppearance": "Light appearance",
+    "CinemaLightAppearanceHelp": "Use the bright cinema design instead of the dark one."
 }

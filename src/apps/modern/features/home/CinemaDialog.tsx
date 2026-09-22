@@ -4,7 +4,10 @@ import React, { useCallback } from 'react';
 import layoutManager from 'components/layoutManager';
 import { getKeyName, isInteractiveElement } from 'scripts/keyboardUtils';
 
+import { useCinemaAppearance } from './settings';
+
 export default function CinemaDialog({ onClose, onKeyDown, disableEscapeKeyDown, ...props }: Readonly<DialogProps>) {
+    const appearance = useCinemaAppearance();
     const handleClose = useCallback<NonNullable<DialogProps['onClose']>>((event, reason) => {
         if (reason === 'escapeKeyDown' && 'repeat' in event && event.repeat) return;
         onClose?.(event, reason);
@@ -32,6 +35,7 @@ export default function CinemaDialog({ onClose, onKeyDown, disableEscapeKeyDown,
         }
     }, [onClose, onKeyDown, disableEscapeKeyDown]);
 
-    return <Dialog {...props} disableEscapeKeyDown={disableEscapeKeyDown}
+    return <Dialog {...props} disableEscapeKeyDown={disableEscapeKeyDown} data-appearance={appearance}
+        data-theme={appearance === 'light' ? 'light' : undefined}
         onClose={handleClose} onKeyDown={handleKeyDown} />;
 }
