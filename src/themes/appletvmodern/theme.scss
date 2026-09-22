@@ -110,6 +110,49 @@ $card-borderRadius: 12px
 
     --jf-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
+    /* Shared button design tokens (see .btnPlay) */
+
+    --jf-btn-fg: #e1edfa;
+
+    --jf-btn-bg: rgba(229, 240, 255, 0.14);
+
+    --jf-btn-bg-hover: rgba(229, 240, 255, 0.49);
+
+    --jf-btn-border: inset 0 0 0 1px rgba(229, 240, 255, 0.14);
+
+    --jf-btn-border-hover: inset 0 0 0 1px rgba(229, 240, 255, 0.28);
+
+    --jf-btn-scale: 1.05;
+
+}
+
+
+@mixin jf-button {
+
+    border-radius: 999px;
+
+    background-color: var(--jf-btn-bg);
+
+    background-image: none;
+
+    box-shadow: var(--jf-btn-border);
+
+    color: var(--jf-btn-fg);
+
+
+    &:hover,
+    &:focus-visible {
+
+        background-color: var(--jf-btn-bg-hover);
+
+        box-shadow: var(--jf-btn-border-hover);
+
+        color: var(--jf-btn-fg);
+
+        scale: var(--jf-btn-scale);
+
+    }
+
 }
 
 
@@ -359,35 +402,42 @@ html {
     margin: 0 0.15em;
 
     transition: background-color 0.3s var(--jf-ease),
-    color 0.3s var(--jf-ease);
+    box-shadow 0.3s var(--jf-ease),
+    color 0.3s var(--jf-ease),
+    scale 0.3s var(--jf-ease);
 
 }
 
 
 .emby-tab-button-active {
 
-    @include glass-flat(999px, 0.14);
+    background-color: var(--jf-btn-bg);
 
+    box-shadow: var(--jf-btn-border);
 
-    color: #fff;
+    color: var(--jf-btn-fg);
 
 }
 
 
 .emby-tab-button:hover:not(.emby-tab-button-active) {
 
-    background-color: rgba(255, 255, 255, 0.07);
+    background-color: rgba(229, 240, 255, 0.08);
 
-    color: #fff;
+    color: var(--jf-btn-fg);
 
 }
 
 
 .emby-tab-button.show-focus:focus {
 
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: var(--jf-btn-bg-hover);
 
-    color: #000;
+    box-shadow: var(--jf-btn-border-hover);
+
+    color: var(--jf-btn-fg);
+
+    scale: var(--jf-btn-scale);
 
 }
 
@@ -547,13 +597,32 @@ html {
 .cardOverlayButton,
 .cardOverlayFab-primary {
 
-    background-color: rgba(28, 28, 32, 0.55) !important;
+    background-color: var(--jf-btn-bg) !important;
 
     backdrop-filter: blur(14px) saturate(160%);
 
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    box-shadow: var(--jf-btn-border);
 
-    color: #fff;
+    color: var(--jf-btn-fg);
+
+    transition: background-color 0.3s var(--jf-ease),
+    box-shadow 0.3s var(--jf-ease),
+    color 0.3s var(--jf-ease),
+    scale 0.3s var(--jf-ease);
+
+
+    &:hover,
+    &:focus-visible {
+
+        background-color: var(--jf-btn-bg-hover) !important;
+
+        box-shadow: var(--jf-btn-border-hover);
+
+        color: var(--jf-btn-fg);
+
+        scale: var(--jf-btn-scale);
+
+    }
 
 }
 
@@ -643,9 +712,9 @@ a[data-role="button"],
     border-radius: 999px;
 
     transition: background-color 0.3s var(--jf-ease),
-    border-color 0.3s var(--jf-ease),
+    box-shadow 0.3s var(--jf-ease),
     color 0.3s var(--jf-ease),
-    transform 0.3s var(--jf-ease);
+    scale 0.3s var(--jf-ease);
 
 }
 
@@ -661,53 +730,33 @@ a[data-role="button"],
 .raised,
 .fab {
 
-    background-color: rgba(255, 255, 255, 0.12);
+    @include jf-button;
 
-    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
 
     backdrop-filter: blur(16px) saturate(160%);
-
-    box-shadow: inset 0 0 0 1px var(--jf-glass-border, $glass-border);
-
-    color: #fff;
-
-
-    &:hover {
-
-        background-color: rgba(255, 255, 255, 0.2);
-
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
-
-        transform: scale(1.03);
-
-    }
-
-
-    &:focus {
-
-        background-color: #fff;
-
-        color: #000;
-
-    }
 
 }
 
 
 .button-submit {
 
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--jf-btn-fg);
 
     background-image: none;
 
     box-shadow: none;
 
-    color: #000;
+    color: #111923;
 
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
 
         background: #fff;
+
+        color: #111923;
+
+        scale: var(--jf-btn-scale);
 
     }
 
@@ -723,6 +772,18 @@ a[data-role="button"],
     box-shadow: none;
 
     color: #fff;
+
+
+    &:hover,
+    &:focus-visible {
+
+        background: rgba(255, 69, 58, 1);
+
+        color: #fff;
+
+        scale: var(--jf-btn-scale);
+
+    }
 
 }
 
@@ -841,15 +902,37 @@ a[data-role="button"],
 
     background-color: transparent;
 
+    color: var(--jf-btn-fg);
+
+    transition: background-color 0.3s var(--jf-ease),
+    box-shadow 0.3s var(--jf-ease),
+    color 0.3s var(--jf-ease),
+    scale 0.3s var(--jf-ease);
+
+
+    &:hover,
+    &:focus-visible {
+
+        background-color: var(--jf-btn-bg-hover);
+
+        box-shadow: var(--jf-btn-border-hover);
+
+        color: var(--jf-btn-fg);
+
+        scale: var(--jf-btn-scale);
+
+    }
+
 }
 
 
 .alphaPickerButton-selected {
 
-    @include glass-flat(999px, 0.16);
+    background-color: var(--jf-btn-bg);
 
+    box-shadow: var(--jf-btn-border);
 
-    color: #fff;
+    color: var(--jf-btn-fg);
 
 }
 
@@ -1247,25 +1330,7 @@ a[data-role="button"],
 
         min-height: 2.8em;
 
-        border-radius: 999px;
-
-        background: rgba(31, 41, 54, 0.92);
-
-        box-shadow: inset 0 0 0 1px rgba(229, 240, 255, 0.14);
-
-        color: #e1edfa;
-
-
-        &:hover,
-        &:focus-visible {
-
-            background-color: #344358;
-
-            outline: 2px solid #e1edfa;
-
-            outline-offset: 3px;
-
-        }
+        @include jf-button;
 
     }
 
@@ -1274,21 +1339,9 @@ a[data-role="button"],
 
         flex-direction: row;
 
-        background-color: #e1edfa;
-
-        color: #e1edfa;
-
-        box-shadow: inset 0 0 0 1px rgba(229, 240, 255, 0.14);
+        @include jf-button;
 
         padding-inline: 1.4em !important;
-
-        &:hover,
-        &:focus-visible {
-
-            background-color: #fff;
-
-            color: #e1edfa;
-        }
 
 
         &::after {
@@ -2043,15 +2096,18 @@ a[data-role="button"],
             height: 44px;
             margin: 0;
             padding: 0;
-            border: 1px solid rgba(229, 240, 255, 0.14);
-            border-radius: 14px;
-            background: rgba(14, 21, 30, 0.78);
-            color: #e1edfa;
+            border: 0;
+            border-radius: 999px;
+            background: var(--jf-btn-bg);
+            box-shadow: var(--jf-btn-border);
+            color: var(--jf-btn-fg);
 
             &:hover,
             &:focus-visible {
-                background: #e1edfa;
-                color: #111923;
+                background: var(--jf-btn-bg-hover);
+                box-shadow: var(--jf-btn-border-hover);
+                color: var(--jf-btn-fg);
+                scale: var(--jf-btn-scale);
             }
         }
     }
@@ -2157,11 +2213,33 @@ a[data-role="button"],
 
 .emby-scrollbuttons .paper-icon-button-light {
 
-    background-color: rgba(28, 28, 32, 0.5);
+    background-color: var(--jf-btn-bg);
 
     backdrop-filter: blur(14px) saturate(160%);
 
+    box-shadow: var(--jf-btn-border);
+
     border-radius: 50%;
+
+    color: var(--jf-btn-fg);
+
+    transition: background-color 0.3s var(--jf-ease),
+    box-shadow 0.3s var(--jf-ease),
+    scale 0.3s var(--jf-ease);
+
+
+    &:hover,
+    &:focus-visible {
+
+        background-color: var(--jf-btn-bg-hover);
+
+        box-shadow: var(--jf-btn-border-hover);
+
+        color: var(--jf-btn-fg);
+
+        scale: var(--jf-btn-scale);
+
+    }
 
 }
 
