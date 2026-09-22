@@ -528,6 +528,12 @@ export function scrollToElement(element, smooth) {
     if (isFixed) {
         scrollCenterX = scrollCenterY = false;
     }
+    if (element.closest('[data-scroll-mode-x="nearest"]')) {
+        scrollCenterX = false;
+    }
+    if (element.closest('[data-scroll-mode-y="nearest"]')) {
+        scrollCenterY = false;
+    }
 
     let xScroller = getScrollableParent(element, false);
     let yScroller = getScrollableParent(element, true);
@@ -579,13 +585,18 @@ export function scrollToElement(element, smooth) {
     doScroll(xScroller, scrollX, yScroller, scrollY, smooth);
 }
 
-if (isEnabled()) {
-    dom.addEventListener(window, 'focusin', function(e) {
-        setTimeout(function() {
+let focusScrollTimer;
+dom.addEventListener(window, 'focusin', function(e) {
+    clearTimeout(focusScrollTimer);
+    if (!isEnabled()) {
+        return;
+    }
+    focusScrollTimer = setTimeout(function() {
+        if (document.documentElement.contains(e.target) && document.activeElement === e.target) {
             scrollToElement(e.target, useSmoothScroll());
-        }, 0);
-    }, { capture: true });
-}
+        }
+    }, 0);
+}, { capture: true });
 
 export default {
     isEnabled: isEnabled,

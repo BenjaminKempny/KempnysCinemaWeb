@@ -18,6 +18,7 @@ import { RequestState } from './MediaCard';
 import { cinemaUrl, readCinemaLocation, type CinemaView } from './navigation';
 import { cinemaLibrarySettingKey, getCinemaLibraries, getCinemaLibraryId, useCinemaLibraries } from './librarySource';
 import CinemaSidebar from './CinemaSidebar';
+import useCinemaFocus from './useCinemaFocus';
 
 import './cinema.scss';
 
@@ -28,6 +29,7 @@ const TABS: { view: CinemaView; label: string }[] = [
 ];
 
 function CinemaContent() {
+    const focusRoot = useCinemaFocus();
     const { user, __legacyApiClient__: client } = useApi();
     const [ params ] = useSearchParams();
     const { media, view, collectionId, genreId, title } = readCinemaLocation(params);
@@ -49,15 +51,16 @@ function CinemaContent() {
     const closeEditor = useCallback(() => setEditor(undefined), []);
 
     return (
-        <Page id='cinemaHomePage' className='cinemaPage' title={mediaTitle} isBackButtonEnabled={false}>
-            <div className='cinemaHome'>
+        <Page id='cinemaHomePage' className='cinemaPage focuscontainer' title={mediaTitle} isBackButtonEnabled={false}>
+            <div ref={focusRoot} className='cinemaHome' data-directional-navigation
+                data-scroll-mode-x='nearest' data-scroll-mode-y='nearest'>
                 <CinemaSidebar media={media} view={view} />
                 <div className='cinemaShell'>
                     <header className='cinemaHeader'>
                         <Link className='cinemaBrand' to={cinemaUrl(media, 'all')} aria-label={globalize.translate('Home')}>
                             <img src='assets/img/appIcon.png' alt="Kempny's Cinema" />
                         </Link>
-                        <nav className='cinemaTabs' aria-label={globalize.translate('CinemaBrowse')}>
+                        <nav className='cinemaTabs focuscontainer-x' aria-label={globalize.translate('CinemaBrowse')}>
                             {TABS.map(tab => <Link key={tab.view} to={cinemaUrl(media, tab.view)}
                                 aria-current={view === tab.view ? 'page' : undefined}>{globalize.translate(tab.label)}</Link>)}
                         </nav>

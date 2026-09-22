@@ -796,6 +796,46 @@
     outline-offset: 3px;
 }
 
+.layout-tv {
+    .cinemaHome :focus,
+    .cinemaDialog :focus {
+        outline: 3px solid #d4e8ff;
+        outline-offset: 3px;
+    }
+
+    .cinemaRow {
+        // Scroll snapping competes with the remote's focus-driven scrolling.
+        scroll-snap-type: none;
+        padding: 8px 8px 14px;
+    }
+
+    .cinemaCardLink {
+        position: relative;
+        transform: none;
+        transition: box-shadow 120ms ease;
+    }
+
+    .cinemaCardLink:focus {
+        box-shadow: 0 0 0 6px rgba(169, 207, 255, 0.25);
+    }
+
+    .cinemaCardPlay,
+    .cinemaCardMenu {
+        position: relative;
+        inset: auto;
+        width: 44px;
+        height: 44px;
+        margin-top: 10px;
+        margin-inline-end: 8px;
+    }
+
+    .cinemaProgress {
+        position: static;
+        display: block;
+        margin-top: 6px;
+    }
+}
+
 .cinemaButton:disabled,
 .cinemaIconButton:disabled {
     opacity: 0.45;

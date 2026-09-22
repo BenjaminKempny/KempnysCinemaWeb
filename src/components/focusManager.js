@@ -87,12 +87,21 @@ function focusableParent(elem) {
 
 // Determines if a focusable element can be focused at a given point in time
 function isCurrentlyFocusableInternal(elem) {
-    // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
-    return elem.offsetParent !== null;
+    if (!elem || !document.documentElement.contains(elem) || elem.closest('[hidden], [inert], [aria-hidden="true"]')) {
+        return false;
+    }
+    if (!elem.getClientRects().length) {
+        return false;
+    }
+    const style = window.getComputedStyle(elem);
+    return style.visibility !== 'hidden' && style.visibility !== 'collapse';
 }
 
 // Determines if a focusable element can be focused at a given point in time
 function isCurrentlyFocusable(elem) {
+    if (!elem) {
+        return false;
+    }
     if (!elem.classList?.contains('focusable')) {
         if (elem.disabled) {
             return false;
@@ -117,7 +126,7 @@ function isCurrentlyFocusable(elem) {
 }
 
 function getDefaultScope() {
-    return scopes[0] || document.body;
+    return scopes[scopes.length - 1] || document.body;
 }
 
 function getFocusableElements(parent, limit, excludeClass) {
@@ -144,7 +153,10 @@ function getFocusableElements(parent, limit, excludeClass) {
 }
 
 function isFocusContainer(elem, direction) {
-    if (focusableContainerTagNames.indexOf(elem.tagName) !== -1) {
+    if (focusableContainerTagNames.indexOf(elem.tagName) !== -1
+        || elem.getAttribute('role') === 'dialog'
+        || elem.getAttribute('role') === 'alertdialog'
+        || elem === getDefaultScope()) {
         return true;
     }
 
@@ -236,10 +248,14 @@ function nav(activeElement, direction, container, focusableElements) {
     if (activeElement) {
         activeElement = focusableParent(activeElement);
     }
+    const scope = getDefaultScope();
+    if (scope !== document.body && !scope.contains(activeElement)) {
+        activeElement = null;
+    }
 
     container = container || (activeElement ? getFocusContainer(activeElement, direction) : getDefaultScope());
 
-    if (!activeElement || activeElement == document.body) {
+    if (!activeElement || activeElement == document.body || activeElement === container) {
         autoFocus(container, true, false);
         return;
     }
@@ -262,6 +278,9 @@ function nav(activeElement, direction, container, focusableElements) {
     const maxDistance = Infinity;
     let minDistance = maxDistance;
     let nearestElement;
+    const directional = !!activeElement.closest('[data-directional-navigation]');
+    let nearestAligned = false;
+    let nearestCrossDistance = Infinity;
 
     for (let i = 0, length = focusable.length; i < length; i++) {
         const curr = focusable[i];
@@ -271,6 +290,9 @@ function nav(activeElement, direction, container, focusableElements) {
         }
         // Don't refocus into the same container
         if (curr === focusableContainer) {
+            continue;
+        }
+        if (curr.matches(':disabled, [tabindex="-1"]')) {
             continue;
         }
 
@@ -322,6 +344,10 @@ function nav(activeElement, direction, container, focusableElements) {
                 break;
         }
 
+        if (!isCurrentlyFocusableInternal(curr)) {
+            continue;
+        }
+
         const x = elementRect.left;
         const y = elementRect.top;
         const x2 = x + elementRect.width - 1;
@@ -362,10 +388,17 @@ function nav(activeElement, direction, container, focusableElements) {
         }
 
         const dist = Math.sqrt(distX * distX + distY * distY);
-
-        if (dist < minDistance) {
+        const aligned = direction < 2 ? intersectY : intersectX;
+        const crossDistance = direction < 2 ? Math.abs(sourceMidY - midY) : Math.abs(sourceMidX - midX);
+        // Prefer the current row/column, and preserve the column when gaps tie.
+        const isNearer = dist < minDistance
+            || (directional && dist === minDistance && crossDistance < nearestCrossDistance);
+        if ((!directional && isNearer)
+            || (directional && ((aligned && !nearestAligned) || (aligned === nearestAligned && isNearer)))) {
             nearestElement = curr;
             minDistance = dist;
+            nearestAligned = aligned;
+            nearestCrossDistance = crossDistance;
         }
     }
 

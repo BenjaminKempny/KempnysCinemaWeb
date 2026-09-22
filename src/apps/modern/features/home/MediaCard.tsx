@@ -127,12 +127,14 @@ export default function MediaCard({ item, wide = false, onAdd, onRemove, to }: R
             </Link>
             {wide && item.Type !== BaseItemKind.BoxSet && (
                 <button className='cinemaIconButton cinemaCardPlay' disabled={playback.isPending || !item.Id} onClick={onPlay}
+                    data-focus-key={`play:${item.Id}`}
                     aria-label={globalize.translate(item.UserData?.PlaybackPositionTicks ? 'ButtonResume' : 'Play') + ': ' + title}>
                     <PlayArrowRounded />
                 </button>
             )}
             {(onAdd || onRemove) && (
                 <button className='cinemaIconButton cinemaCardMenu' onClick={onMenu}
+                    data-focus-key={`collection:${item.Id}`}
                     aria-label={globalize.translate(onRemove ? 'CinemaRemoveFromCollection' : 'AddToCollection') + ': ' + title}>
                     {onRemove ? <Remove /> : <Add />}
                 </button>

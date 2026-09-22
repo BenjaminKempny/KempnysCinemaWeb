@@ -35,6 +35,7 @@ vi.mock('components/Page', () => ({
         <main id={id} className={className}>{children}</main>
 }));
 vi.mock('components/backdrop/backdrop', () => ({ clearBackdrop: vi.fn() }));
+vi.mock('components/layoutManager', () => ({ default: { tv: false } }));
 vi.mock('components/loading/LoadingComponent', () => ({ default: () => <div>Loading</div> }));
 vi.mock('components/playback/playbackmanager', () => ({ playbackManager: {} }));
 vi.mock('utils/events', () => ({ default: { on: vi.fn(), off: vi.fn() } }));

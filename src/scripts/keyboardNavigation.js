@@ -7,147 +7,9 @@ import browser from './browser';
 import inputManager from './inputManager';
 import layoutManager from '../components/layoutManager';
 import appSettings from './settings/appSettings';
+import { getKeyName, isContentEditable, isInteractiveElement, isMediaKey, isNavigationKey } from './keyboardUtils';
 
-/**
- * Key name mapping.
- */
-const KeyNames = {
-    13: 'Enter',
-    27: 'Escape',
-    37: 'ArrowLeft',
-    38: 'ArrowUp',
-    39: 'ArrowRight',
-    40: 'ArrowDown',
-
-    // UWP WebView section start --
-    // Navigation Up/Down/Left/Right is part of TVJS directionalnavigation-1.0.0.0.js
-    // Unsure what this is used for. Media remote?
-    138: 'NavigationUp',
-    139: 'NavigationDown',
-    140: 'NavigationLeft',
-    141: 'NavigationRight',
-    195: 'GamepadA',
-    // Currently Xbox UWP WebView 2 sends code 27 (Escape instead) despite being undocumented
-    // Desktop UWP unchanged
-    196: 'GamepadB',
-    203: 'GamepadDPadUp',
-    204: 'GamepadDPadDown',
-    205: 'GamepadDPadLeft',
-    206: 'GamepadDPadRight',
-    // Currently Xbox UWP WebView 2 sends Arrow keycodes despite being undocumented
-    // Desktop UWP unchanged
-    // Left Thumbstick
-    211: 'GamepadLeftThumbUp',
-    212: 'GamepadLeftThumbDown',
-    214: 'GamepadLeftThumbLeft',
-    213: 'GamepadLeftThumbRight',
-    // End of UWP WebView Section
-
-    // MediaRewind (Tizen/WebOS)
-    412: 'MediaRewind',
-    // MediaStop (Tizen/WebOS)
-    413: 'MediaStop',
-    // MediaPlay (Tizen/WebOS)
-    415: 'MediaPlay',
-    // MediaFastForward (Tizen/WebOS)
-    417: 'MediaFastForward',
-    // Back (WebOS)
-    461: 'Back',
-    // Back (Tizen)
-    10009: 'Back',
-    // MediaTrackPrevious (Tizen)
-    10232: 'MediaTrackPrevious',
-    // MediaTrackNext (Tizen)
-    10233: 'MediaTrackNext',
-    // MediaPlayPause (Tizen)
-    10252: 'MediaPlayPause'
-};
-
-const KeyAliases = {
-    // GamepadA needs special case handling
-    GamepadB: 'Escape',
-    NavigationUp: 'ArrowUp',
-    NavigationDown: 'ArrowDown',
-    NavigationLeft: 'ArrowLeft',
-    NavigationRight: 'ArrowRight',
-    GamepadDPadUp: 'ArrowUp',
-    GamepadDPadDown: 'ArrowDown',
-    GamepadDPadLeft: 'ArrowLeft',
-    GamepadDPadRight: 'ArrowRight',
-    GamepadLeftThumbUp: 'ArrowUp',
-    GamepadLeftThumbDown: 'ArrowDown',
-    GamepadLeftThumbLeft: 'ArrowLeft',
-    GamepadLeftThumbRight: 'ArrowRight'
-};
-
-/**
- * Keys used for keyboard navigation.
- */
-const NavigationKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'BrowserHome', 'Find'];
-
-/**
- * Keys used for media playback control.
- */
-const MediaKeys = ['MediaRewind', 'MediaStop', 'MediaPlay', 'MediaFastForward', 'MediaTrackPrevious', 'MediaTrackNext', 'MediaPlayPause'];
-
-/**
- * Elements for which navigation should be constrained.
- */
-const InteractiveElements = ['INPUT', 'TEXTAREA'];
-
-/**
- * Types of INPUT element for which navigation shouldn't be constrained.
- */
-const NonInteractiveInputElements = ['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'reset', 'submit'];
-
-/**
- * Returns key name from event.
- *
- * @param {KeyboardEvent} event - Keyboard event.
- * @return {string} Key name.
- */
-export function getKeyName(event) {
-    const key = KeyNames[event.keyCode] || event.code || '';
-    return KeyAliases[key] || key;
-}
-
-/**
- * Returns _true_ if key is used for navigation.
- *
- * @param {string} key - Key name.
- * @return {boolean} _true_ if key is used for navigation.
- */
-export function isNavigationKey(key) {
-    return NavigationKeys.indexOf(key) != -1;
-}
-
-/**
- * Returns _true_ if key is used for media playback control.
- *
- * @param {string} key - Key name.
- * @return {boolean} _true_ if key is used for media playback control.
- */
-export function isMediaKey(key) {
-    return MediaKeys.includes(key);
-}
-
-/**
- * Returns _true_ if the element is interactive.
- *
- * @param {Element} element - Element.
- * @return {boolean} _true_ if the element is interactive.
- */
-export function isInteractiveElement(element) {
-    if (element && InteractiveElements.includes(element.tagName)) {
-        if (element.tagName === 'INPUT') {
-            return !NonInteractiveInputElements.includes(element.type);
-        }
-
-        return true;
-    }
-
-    return false;
-}
+export { getKeyName, isInteractiveElement, isMediaKey, isNavigationKey };
 
 export function enable() {
     const hasMediaSession = 'mediaSession' in navigator;
@@ -170,40 +32,65 @@ export function enable() {
         }
 
         let capture = true;
+        const activeElement = document.activeElement;
+        const canActivate = !layoutManager.tv || !e.repeat;
 
         switch (key) {
             case 'ArrowLeft':
-                if (!isInteractiveElement(document.activeElement)) {
+                if (!isInteractiveElement(activeElement)) {
                     inputManager.handleCommand('left');
                 } else {
                     capture = false;
                 }
                 break;
             case 'ArrowUp':
-                inputManager.handleCommand('up');
+                if (activeElement?.tagName === 'SELECT' || activeElement?.tagName === 'TEXTAREA' || isContentEditable(activeElement)) {
+                    capture = false;
+                } else {
+                    inputManager.handleCommand('up');
+                }
                 break;
             case 'ArrowRight':
-                if (!isInteractiveElement(document.activeElement)) {
+                if (!isInteractiveElement(activeElement)) {
                     inputManager.handleCommand('right');
                 } else {
                     capture = false;
                 }
                 break;
             case 'ArrowDown':
-                inputManager.handleCommand('down');
+                if (activeElement?.tagName === 'SELECT' || activeElement?.tagName === 'TEXTAREA' || isContentEditable(activeElement)) {
+                    capture = false;
+                } else {
+                    inputManager.handleCommand('down');
+                }
                 break;
 
+            case 'Enter':
+                if (layoutManager.tv && activeElement?.tagName !== 'SELECT' && !isInteractiveElement(activeElement)) {
+                    if (canActivate) {
+                        inputManager.handleCommand('select');
+                    }
+                } else {
+                    capture = false;
+                }
+                break;
             case 'GamepadA':
-                inputManager.handleCommand('select');
+                if (canActivate) {
+                    inputManager.handleCommand('select');
+                }
                 break;
             case 'Back':
-                inputManager.handleCommand('back');
+                if (canActivate) {
+                    inputManager.handleCommand('back');
+                }
                 break;
 
             // HACK: Hisense TV (VIDAA OS) uses Backspace for Back action
             case 'Backspace':
-                if (browser.tv && browser.hisense && browser.vidaa) {
-                    inputManager.handleCommand('back');
+                if (browser.tv && browser.hisense && browser.vidaa && !isInteractiveElement(activeElement)) {
+                    if (canActivate) {
+                        inputManager.handleCommand('back');
+                    }
                 } else {
                     capture = false;
                 }
@@ -211,7 +98,9 @@ export function enable() {
 
             case 'Escape':
                 if (layoutManager.tv) {
-                    inputManager.handleCommand('back');
+                    if (canActivate) {
+                        inputManager.handleCommand('back');
+                    }
                 } else {
                     capture = false;
                 }

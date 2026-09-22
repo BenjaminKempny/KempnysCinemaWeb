@@ -20,6 +20,24 @@ function declarations(selector: string, media?: string, stylesheet = styles) {
 }
 
 describe('cinema layout constraints', () => {
+    it('uses explicit TV focus outlines and avoids competing scroll snap animations', () => {
+        expect(declarations('.layout-tv .cinemaHome :focus,\n.layout-tv .cinemaDialog :focus')).toMatchObject({
+            outline: '3px solid #d4e8ff',
+            'outline-offset': '3px'
+        });
+        expect(declarations('.layout-tv .cinemaRow')['scroll-snap-type']).toBe('none');
+    });
+
+    it('places TV card actions below the poster so directional navigation can reach them', () => {
+        expect(declarations('.layout-tv .cinemaCardPlay,\n.layout-tv .cinemaCardMenu')).toMatchObject({
+            position: 'relative',
+            inset: 'auto',
+            width: '44px',
+            height: '44px'
+        });
+        expect(declarations('.layout-tv .cinemaCardLink').position).toBe('relative');
+    });
+
     it('gives every home tab a full-width scrolling page independent of its content', () => {
         expect(declarations('#cinemaHomePage.cinemaPage,\n.cinemaPage.cinemaUtilityPage')).toMatchObject({
             position: 'absolute',

@@ -6,6 +6,7 @@ import { clearBackdrop } from 'components/backdrop/backdrop';
 import globalize from 'lib/globalize';
 
 import CinemaSidebar, { type CinemaDestination } from './CinemaSidebar';
+import useCinemaFocus from './useCinemaFocus';
 
 import './cinema.scss';
 
@@ -14,10 +15,12 @@ export default function CinemaPage({ title, active, children }: Readonly<{
     active: CinemaDestination;
     children: ReactNode;
 }>) {
+    const focusRoot = useCinemaFocus();
     useEffect(() => clearBackdrop(true), []);
 
-    return <Page id={`cinema-${active}`} className='cinemaPage cinemaUtilityPage' title={title}>
-        <div className='cinemaHome'>
+    return <Page id={`cinema-${active}`} className='cinemaPage cinemaUtilityPage focuscontainer' title={title}>
+        <div ref={focusRoot} className='cinemaHome' data-directional-navigation
+            data-scroll-mode-x='nearest' data-scroll-mode-y='nearest'>
             <CinemaSidebar active={active} />
             <div className='cinemaShell'>
                 <header className='cinemaHeader cinemaUtilityHeader'>

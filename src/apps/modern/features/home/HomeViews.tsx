@@ -6,7 +6,6 @@ import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -25,6 +24,7 @@ import {
     useCinemaItems
 } from './api';
 import type { CollectionEditorOptions } from './CollectionManager';
+import Dialog from './CinemaDialog';
 import InfiniteScroll from './InfiniteScroll';
 import MediaCard, { Artwork, RequestState, useArtwork, useCinemaPlayback, useDetailsUrl } from './MediaCard';
 import { cinemaUrl } from './navigation';
@@ -101,7 +101,7 @@ export function ContinueWatching({ scope }: Readonly<{ scope: CinemaScope }>) {
         <section className='cinemaSection' aria-labelledby='cinemaContinueTitle'>
             <div className='cinemaSectionHeader'><h2 id='cinemaContinueTitle'>{globalize.translate('HeaderContinueWatching')}</h2></div>
             <RequestState pending={query.isLoading} error={query.isError} retry={retry} />
-            <div className='cinemaRow'>
+            <div className='cinemaRow focuscontainer-right'>
                 {query.data?.map(item => <MediaCard key={item.Id} item={item} wide />)}
             </div>
         </section>
@@ -186,7 +186,7 @@ function GenreRow({ scope, genre, onManage }: Readonly<{ scope: CinemaScope; gen
                 </Link>
             </div>
             <RequestState pending={query.isLoading} error={query.isError} retry={retry} />
-            <div className='cinemaRow'>
+            <div className='cinemaRow focuscontainer-right'>
                 {query.data?.pages[0]?.Items?.map(item => <MediaCard key={item.Id} item={item}
                     onAdd={onManage ? onAdd : undefined} />)}
             </div>

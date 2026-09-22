@@ -30,6 +30,7 @@ vi.mock('components/Page', () => ({
     default: ({ children, className }: PropsWithChildren<{ className: string }>) => <main className={className}>{children}</main>
 }));
 vi.mock('components/backdrop/backdrop', () => ({ clearBackdrop: vi.fn() }));
+vi.mock('components/layoutManager', () => ({ default: { tv: false } }));
 vi.mock('components/playback/playbackmanager', () => ({ playbackManager: {} }));
 vi.mock('lib/globalize', () => ({
     default: { translate: (key: string, value?: string) => [key, value].filter(Boolean).join(': ') }

@@ -1,6 +1,5 @@
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models/base-item-dto';
 import { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models/base-item-kind';
-import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -9,6 +8,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import globalize from 'lib/globalize';
 
 import { type CinemaScope, useCinemaCollectionMutations, useCinemaItems } from './api';
+import Dialog from './CinemaDialog';
 import InfiniteScroll from './InfiniteScroll';
 import { Artwork, RequestState } from './MediaCard';
 
