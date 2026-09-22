@@ -30,9 +30,6 @@ const RootApp = () => (
                 </WebConfigProvider>
             </UserSettingsProvider>
         </ApiProvider>
-        {useReactQueryDevtools && (
-            <ReactQueryDevtools initialIsOpen={false} />
-        )}
     </PersistQueryClientProvider>
 );
 
