@@ -40,7 +40,7 @@ function HeroContent({ item, previous, next }: Readonly<{ item: BaseItemDto; pre
     return (
         <>
             {artwork && <img className='cinemaAmbient' src={artwork} alt='' />}
-            <section className='cinemaHero' aria-label={globalize.translate('CinemaSpotlight')}>
+            <section className='cinemaHero' data-focus-region='spotlight' aria-label={globalize.translate('CinemaSpotlight')}>
                 <Artwork item={item} wide eager className='cinemaHeroImage' />
                 <div className='cinemaHeroContent'>
                     <p className='cinemaEyebrow'>{globalize.translate('CinemaSpotlight')}</p>
@@ -98,7 +98,7 @@ export function ContinueWatching({ scope }: Readonly<{ scope: CinemaScope }>) {
         return null;
     }
     return (
-        <section className='cinemaSection' aria-labelledby='cinemaContinueTitle'>
+        <section className='cinemaSection' data-focus-region='continue' aria-labelledby='cinemaContinueTitle'>
             <div className='cinemaSectionHeader'><h2 id='cinemaContinueTitle'>{globalize.translate('HeaderContinueWatching')}</h2></div>
             <RequestState pending={query.isLoading} error={query.isError} retry={retry} />
             <div className='cinemaRow focuscontainer-right'>
@@ -132,7 +132,7 @@ export function Catalog({ scope, genreId, collectionId, title, onManage, onRemov
     const onSortChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => setSort(event.target.value), []);
     const onAdd = useCallback((item: BaseItemDto) => onManage?.({ item }), [onManage]);
     return (
-        <section className='cinemaCatalog'>
+        <section className='cinemaCatalog' data-focus-region='catalog'>
             <div className='cinemaToolbar'>
                 <h2>{title}</h2>
                 <label className='cinemaSort'>{globalize.translate('LabelSortBy')}
@@ -178,7 +178,7 @@ function GenreRow({ scope, genre, onManage }: Readonly<{ scope: CinemaScope; gen
     }, []);
 
     return (
-        <section ref={element} className='cinemaGenre'>
+        <section ref={element} className='cinemaGenre' data-focus-region={`genre:${genre.Id}`}>
             <div className='cinemaSectionHeader'>
                 <h2>{genre.Name}</h2>
                 <Link className='cinemaButton' to={cinemaUrl(scope.media, 'genres', { genre: genre.Id, title: genre.Name || '' })}>

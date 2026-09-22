@@ -1,0 +1,14 @@
+.directionalNavigation :focus {
+    outline: 3px solid #d4e8ff !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 6px rgba(10, 20, 35, 0.8), 0 0 24px rgba(169, 207, 255, 0.5) !important;
+}
+
+.directionalNavigation .cinemaRow {
+    scroll-snap-type: none;
+}
+
+.directionalNavigation .cinemaCardLink {
+    // Keep the geometry stable while holding a direction.
+    transform: none;
+}

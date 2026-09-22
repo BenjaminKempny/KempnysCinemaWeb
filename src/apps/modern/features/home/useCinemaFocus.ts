@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 
 import focusManager from 'components/focusManager';
-import layoutManager from 'components/layoutManager';
 
 interface FocusPosition {
     key: string | null;
@@ -12,7 +11,9 @@ interface FocusPosition {
 const positions = new Map<string, FocusPosition>();
 
 function focusKey(element: Element) {
-    return element.getAttribute('data-focus-key') || element.getAttribute('href') || element.id || null;
+    const key = element.getAttribute('data-focus-key') || element.getAttribute('href') || element.id;
+    const region = element.closest('[data-focus-region]')?.getAttribute('data-focus-region') || '';
+    return key ? `${region}:${key}` : null;
 }
 
 export default function useCinemaFocus() {
@@ -22,7 +23,7 @@ export default function useCinemaFocus() {
 
     useEffect(() => {
         const root = container.current;
-        if (!root || !layoutManager.tv) return;
+        if (!root) return;
 
         let saved = navigationType === 'POP' ? positions.get(location.key) : undefined;
 
@@ -61,7 +62,12 @@ export default function useCinemaFocus() {
 
         root.addEventListener('focusin', remember);
         const observer = new MutationObserver(restore);
-        observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
+        observer.observe(root, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['disabled', 'hidden', 'inert', 'aria-hidden', 'aria-disabled', 'tabindex', 'class', 'style']
+        });
         restore();
         return () => {
             observer.disconnect();

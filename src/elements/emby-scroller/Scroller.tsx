@@ -131,6 +131,7 @@ const Scroller: FC<PropsWithChildren<ScrollerProps>> = ({
 
     const initCenterFocus = useCallback((elem: HTMLElement, scrollerInstance: ScrollerFactory) => {
         dom.addEventListener(elem, 'focus', function (e: FocusEvent) {
+            if (!layoutManager.tv && !document.documentElement.classList.contains('directionalNavigation')) return;
             const focused = focusManager.focusableParent(e.target);
             if (focused) {
                 scrollerInstance.toCenter(focused, false);
@@ -189,7 +190,7 @@ const Scroller: FC<PropsWithChildren<ScrollerProps>> = ({
         scrollerFactoryRef.current.init();
         scrollerFactoryRef.current.reload();
 
-        if (layoutManager.tv && isCenterFocusEnabled) {
+        if ((layoutManager.tv || layoutManager.modern) && isCenterFocusEnabled) {
             initCenterFocus(frame, scrollerFactoryRef.current);
         }
 
@@ -253,4 +254,3 @@ const Scroller: FC<PropsWithChildren<ScrollerProps>> = ({
 };
 
 export default Scroller;
-

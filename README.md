@@ -72,3 +72,21 @@ Jellyfin Web is the frontend used for most of the clients available for end user
    ```
 
 Review the [Contributing Guide](./CONTRIBUTING.md) for more information on our process and tech stack.
+
+### Keyboard and TV navigation
+
+The modern client supports D-pad navigation on desktop as well as TV layouts.
+Use the arrow keys to move spatially between visible controls, Enter to activate,
+and Escape or Backspace to go back when the current page or dialog allows it.
+Text editing, native select/value controls, modified shortcuts, and existing
+player shortcuts retain their own keyboard behavior. Mouse, touch, and wheel
+scrolling remain available.
+
+Navigation reuses `keyboardNavigation`, `inputManager`, and `focusManager`.
+Use native links/buttons or non-negative `tabindex` values for custom controls;
+hidden, inert, and disabled controls are excluded. Existing `focuscontainer-*`
+classes define directional boundaries. Focus scrolls into view, while custom
+scrollers retain their own scrolling implementation. Cinema pages restore focus
+after Back navigation and recover it when asynchronously loaded content changes.
+`data-focus-region` distinguishes repeated items in different Cinema sections;
+`data-focus-key` supplies stable identities for controls without links.

@@ -25,7 +25,7 @@ export default function CinemaSidebar({ media, view = 'all', active }: Readonly<
         { to: '/mypreferencesmenu', label: 'Settings', icon: <SettingsOutlined />, active: active === 'settings' }
     ];
 
-    return <nav className='cinemaSidebar' aria-label={globalize.translate('CinemaNavigation')}>
+    return <nav className='cinemaSidebar' data-focus-region='sidebar' aria-label={globalize.translate('CinemaNavigation')}>
         {links.map(link => <Link key={link.label} to={link.to} className='cinemaNavItem' aria-current={link.active ? 'page' : undefined}
             aria-label={globalize.translate(link.label)} title={globalize.translate(link.label)}>{link.icon}</Link>)}
     </nav>;

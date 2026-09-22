@@ -60,7 +60,7 @@ function CinemaContent() {
                         <Link className='cinemaBrand' to={cinemaUrl(media, 'all')} aria-label={globalize.translate('Home')}>
                             <img src='assets/img/appIcon.png' alt="Kempny's Cinema" />
                         </Link>
-                        <nav className='cinemaTabs focuscontainer-x' aria-label={globalize.translate('CinemaBrowse')}>
+                        <nav className='cinemaTabs focuscontainer-x' data-focus-region='tabs' aria-label={globalize.translate('CinemaBrowse')}>
                             {TABS.map(tab => <Link key={tab.view} to={cinemaUrl(media, tab.view)}
                                 aria-current={view === tab.view ? 'page' : undefined}>{globalize.translate(tab.label)}</Link>)}
                         </nav>

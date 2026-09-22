@@ -1,5 +1,6 @@
 import dom from '../utils/dom';
 import scrollManager from './scrollManager';
+import layoutManager from './layoutManager';
 
 const scopes = [];
 function pushScope(elem) {
@@ -16,7 +17,7 @@ function autoFocus(view, defaultToFirst, findAutoFocusElement) {
     let element;
     if (findAutoFocusElement !== false) {
         element = view.querySelector('*[autofocus]');
-        if (element) {
+        if (isCurrentlyFocusable(element)) {
             focus(element);
             return element;
         }
@@ -37,25 +38,33 @@ function autoFocus(view, defaultToFirst, findAutoFocusElement) {
 function focus(element) {
     try {
         element.focus({
-            preventScroll: scrollManager.isEnabled()
+            preventScroll: scrollManager.isEnabled() || layoutManager.modern
         });
     } catch (err) {
         console.error('Error in focusManager.autoFocus: ' + err);
+    }
+    if (layoutManager.modern && !scrollManager.isEnabled() && document.activeElement === element) {
+        if (element.closest('[data-scroll-mode-x="custom"], [data-scroll-mode-y="custom"]')) {
+            // Transformed legacy scrollers handle their own axis on focus.
+            scrollManager.scrollToElement(element, false);
+        } else {
+            element.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+        }
     }
 }
 
 const focusableTagNames = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'];
 const focusableContainerTagNames = ['BODY', 'DIALOG'];
 const focusableQuery = focusableTagNames.map(function (t) {
+    if (t === 'A') t += '[href]';
     if (t === 'INPUT') {
         t += ':not([type="range"]):not([type="file"])';
     }
     return t + ':not([tabindex="-1"]):not(:disabled)';
-}).join(',') + ',.focusable';
+}).join(',') + ',.focusable,[tabindex]';
 
 function isFocusable(elem) {
-    return focusableTagNames.indexOf(elem.tagName) !== -1
-            || (elem.classList?.contains('focusable'));
+    return elem?.matches?.(focusableQuery) || false;
 }
 
 function normalizeFocusable(elem, originalElement) {
@@ -87,19 +96,25 @@ function focusableParent(elem) {
 
 // Determines if a focusable element can be focused at a given point in time
 function isCurrentlyFocusableInternal(elem) {
-    if (!elem || !document.documentElement.contains(elem) || elem.closest('[hidden], [inert], [aria-hidden="true"]')) {
+    if (!elem || !document.documentElement.contains(elem)
+        || elem.closest('[hidden], [inert], [aria-hidden="true"], [aria-disabled="true"]')
+        || elem.matches(':disabled, [disabled]') || (elem.hasAttribute('tabindex') && elem.tabIndex < 0)) {
         return false;
     }
     if (!elem.getClientRects().length) {
         return false;
     }
     const style = window.getComputedStyle(elem);
-    return style.visibility !== 'hidden' && style.visibility !== 'collapse';
+    if (style.visibility === 'hidden' || style.visibility === 'collapse' || style.opacity === '0') return false;
+    for (let parent = elem.parentElement; parent; parent = parent.parentElement) {
+        if (window.getComputedStyle(parent).opacity === '0') return false;
+    }
+    return true;
 }
 
 // Determines if a focusable element can be focused at a given point in time
 function isCurrentlyFocusable(elem) {
-    if (!elem) {
+    if (!isFocusable(elem)) {
         return false;
     }
     if (!elem.classList?.contains('focusable')) {
@@ -126,7 +141,16 @@ function isCurrentlyFocusable(elem) {
 }
 
 function getDefaultScope() {
-    return scopes[scopes.length - 1] || document.body;
+    if (scopes.length) return scopes[scopes.length - 1];
+    const dialogs = document.querySelectorAll('dialog[open], [role="dialog"], [role="alertdialog"], .dialog.opened');
+    for (let i = dialogs.length - 1; i >= 0; i--) {
+        const dialog = dialogs[i];
+        if (!dialog.closest('[hidden], [inert], [aria-hidden="true"]')
+            && dialog.getClientRects().length && window.getComputedStyle(dialog).visibility !== 'hidden') {
+            return dialog;
+        }
+    }
+    return document.body;
 }
 
 function getFocusableElements(parent, limit, excludeClass) {
@@ -140,7 +164,7 @@ function getFocusableElements(parent, limit, excludeClass) {
             continue;
         }
 
-        if (isCurrentlyFocusableInternal(elem)) {
+        if (isCurrentlyFocusable(elem)) {
             focusableElements.push(elem);
 
             if (limit && focusableElements.length >= limit) {
@@ -255,9 +279,8 @@ function nav(activeElement, direction, container, focusableElements) {
 
     container = container || (activeElement ? getFocusContainer(activeElement, direction) : getDefaultScope());
 
-    if (!activeElement || activeElement == document.body || activeElement === container) {
-        autoFocus(container, true, false);
-        return;
+    if (!isCurrentlyFocusable(activeElement) || activeElement === container) {
+        return !!autoFocus(container, true, false);
     }
 
     const focusableContainer = dom.parentWithClass(activeElement, 'focusable');
@@ -278,7 +301,7 @@ function nav(activeElement, direction, container, focusableElements) {
     const maxDistance = Infinity;
     let minDistance = maxDistance;
     let nearestElement;
-    const directional = !!activeElement.closest('[data-directional-navigation]');
+    const directional = layoutManager.modern || !!activeElement.closest('[data-directional-navigation]');
     let nearestAligned = false;
     let nearestCrossDistance = Infinity;
 
@@ -297,6 +320,10 @@ function nav(activeElement, direction, container, focusableElements) {
         }
 
         const elementRect = getOffset(curr);
+        const midX = elementRect.left + (elementRect.width / 2);
+        const midY = elementRect.top + (elementRect.height / 2);
+        const contained = directional && elementRect.left >= rect.left && elementRect.right <= rect.right
+            && elementRect.top >= rect.top && elementRect.bottom <= rect.bottom;
 
         // not currently visible
         if (!elementRect.width && !elementRect.height) {
@@ -306,37 +333,37 @@ function nav(activeElement, direction, container, focusableElements) {
         switch (direction) {
             case 0:
                 // left
-                if (elementRect.left >= rect.left) {
+                if (directional ? contained || midX >= sourceMidX : elementRect.left >= rect.left) {
                     continue;
                 }
-                if (elementRect.right === rect.right) {
+                if (!directional && elementRect.right === rect.right) {
                     continue;
                 }
                 break;
             case 1:
                 // right
-                if (elementRect.right <= rect.right) {
+                if (directional ? contained || midX <= sourceMidX : elementRect.right <= rect.right) {
                     continue;
                 }
-                if (elementRect.left === rect.left) {
+                if (!directional && elementRect.left === rect.left) {
                     continue;
                 }
                 break;
             case 2:
                 // up
-                if (elementRect.top >= rect.top) {
+                if (directional ? midY >= sourceMidY : elementRect.top >= rect.top) {
                     continue;
                 }
-                if (elementRect.bottom >= rect.bottom) {
+                if (!directional && elementRect.bottom >= rect.bottom) {
                     continue;
                 }
                 break;
             case 3:
                 // down
-                if (elementRect.bottom <= rect.bottom) {
+                if (directional ? midY <= sourceMidY : elementRect.bottom <= rect.bottom) {
                     continue;
                 }
-                if (elementRect.top <= rect.top) {
+                if (!directional && elementRect.top <= rect.top) {
                     continue;
                 }
                 break;
@@ -344,7 +371,7 @@ function nav(activeElement, direction, container, focusableElements) {
                 break;
         }
 
-        if (!isCurrentlyFocusableInternal(curr)) {
+        if (!isCurrentlyFocusable(curr)) {
             continue;
         }
 
@@ -355,9 +382,6 @@ function nav(activeElement, direction, container, focusableElements) {
 
         const intersectX = intersects(point1x, point2x, x, x2);
         const intersectY = intersects(point1y, point2y, y, y2);
-
-        const midX = elementRect.left + (elementRect.width / 2);
-        const midY = elementRect.top + (elementRect.height / 2);
 
         let distX;
         let distY;
@@ -409,12 +433,15 @@ function nav(activeElement, direction, container, focusableElements) {
             if (nearestElementFocusableParent
                     && nearestElementFocusableParent !== nearestElement
                     && focusableContainer !== nearestElementFocusableParent
+                    && isCurrentlyFocusable(nearestElementFocusableParent)
             ) {
                 nearestElement = nearestElementFocusableParent;
             }
         }
         focus(nearestElement);
     }
+    // At a navigation boundary the key is still consumed, without scrolling the page.
+    return true;
 }
 
 function intersectsInternal(a1, a2, b1, b2) {
@@ -506,22 +533,22 @@ export default {
     moveLeft: function (sourceElement, options) {
         const container = options ? options.container : null;
         const focusableElements = options ? options.focusableElements : null;
-        nav(sourceElement, 0, container, focusableElements);
+        return nav(sourceElement, 0, container, focusableElements);
     },
     moveRight: function (sourceElement, options) {
         const container = options ? options.container : null;
         const focusableElements = options ? options.focusableElements : null;
-        nav(sourceElement, 1, container, focusableElements);
+        return nav(sourceElement, 1, container, focusableElements);
     },
     moveUp: function (sourceElement, options) {
         const container = options ? options.container : null;
         const focusableElements = options ? options.focusableElements : null;
-        nav(sourceElement, 2, container, focusableElements);
+        return nav(sourceElement, 2, container, focusableElements);
     },
     moveDown: function (sourceElement, options) {
         const container = options ? options.container : null;
         const focusableElements = options ? options.focusableElements : null;
-        nav(sourceElement, 3, container, focusableElements);
+        return nav(sourceElement, 3, container, focusableElements);
     },
     sendText: sendText,
     isCurrentlyFocusable: isCurrentlyFocusable,

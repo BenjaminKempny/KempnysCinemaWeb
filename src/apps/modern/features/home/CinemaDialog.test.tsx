@@ -44,6 +44,7 @@ beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
     layoutManager.tv = true;
+    layoutManager.modern = false;
     Object.assign(browser, { tv: true, hisense: false, vidaa: false });
     vi.mocked(isInteractiveElement).mockReturnValue(false);
     container = document.createElement('div');
@@ -139,6 +140,7 @@ describe('Cinema dialog remote Back', () => {
     });
 
     it('does not interfere with editing and arrow keys', () => {
+        vi.mocked(isInteractiveElement).mockReturnValue(true);
         const onKeyDown = vi.fn();
         renderDialog({ onKeyDown });
         for (const key of ['a', 'Enter', 'ArrowLeft', 'Backspace']) {
@@ -154,12 +156,20 @@ describe('Cinema dialog remote Back', () => {
         expect(close).not.toHaveBeenCalled();
     });
 
-    it('handles Backspace only on Hisense VIDAA outside editable elements', () => {
-        Object.assign(browser, { hisense: true, vidaa: true });
+    it('handles Backspace on desktop outside editable elements', () => {
+        layoutManager.tv = false;
+        layoutManager.modern = true;
         renderDialog();
         expect(press({ key: 'Backspace' }).defaultPrevented).toBe(true);
         expect(close).toHaveBeenCalledOnce();
         expect(isInteractiveElement).toHaveBeenCalledWith(document.querySelector('input'));
+        expect(backgroundKeyDown).not.toHaveBeenCalled();
+    });
+
+    it('contains Backspace when dismissal is disabled', () => {
+        renderDialog({ disableEscapeKeyDown: true });
+        expect(press({ key: 'Backspace' }).defaultPrevented).toBe(true);
+        expect(close).not.toHaveBeenCalled();
         expect(backgroundKeyDown).not.toHaveBeenCalled();
     });
 

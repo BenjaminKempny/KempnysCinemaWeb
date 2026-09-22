@@ -16,6 +16,7 @@ ScrollerPrototype.createdCallback = function () {
 
 function initCenterFocus(elem, scrollerInstance) {
     dom.addEventListener(elem, 'focus', function (e) {
+        if (!layoutManager.tv && !document.documentElement.classList.contains('directionalNavigation')) return;
         const focused = focusManager.focusableParent(e.target);
         if (focused) {
             scrollerInstance.toCenter(focused);
@@ -145,7 +146,7 @@ ScrollerPrototype.attachedCallback = function () {
     this.scroller.init();
     this.scroller.reload();
 
-    if (layoutManager.tv && this.getAttribute('data-centerfocus')) {
+    if ((layoutManager.tv || layoutManager.modern) && this.getAttribute('data-centerfocus')) {
         initCenterFocus(this, this.scroller);
     }
 
@@ -196,4 +197,3 @@ document.registerElement('emby-scroller', {
     prototype: ScrollerPrototype,
     extends: 'div'
 });
-

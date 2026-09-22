@@ -44,6 +44,8 @@ describe('keyboard navigation', () => {
         vi.clearAllMocks();
         vi.spyOn(console, 'debug').mockImplementation(vi.fn());
         layoutManager.tv = true;
+        layoutManager.modern = false;
+        document.documentElement.classList.remove('directionalNavigation');
         Object.assign(browser, { tv: true, hisense: false, vidaa: false });
         document.body.innerHTML = '';
     });
@@ -177,6 +179,14 @@ describe('keyboard navigation', () => {
         expect(inputManager.handleCommand.mock.calls).toEqual([['up'], ['down']]);
     });
 
+    it.each(['number', 'range'])('preserves native value adjustment for %s inputs', type => {
+        focus(`<input type="${type}">`);
+        for (const key of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']) {
+            expect(press({ key }).defaultPrevented).toBe(false);
+        }
+        expect(inputManager.handleCommand).not.toHaveBeenCalled();
+    });
+
     it.each([
         '<input>',
         '<textarea></textarea>',
@@ -200,9 +210,9 @@ describe('keyboard navigation', () => {
         expect(inputManager.handleCommand.mock.calls).toEqual([['select']]);
     });
 
-    it('keeps ordinary Backspace native outside Hisense VIDAA', () => {
-        expect(press({ keyCode: 8 }).defaultPrevented).toBe(false);
-        expect(inputManager.handleCommand).not.toHaveBeenCalled();
+    it('uses ordinary Backspace for TV back navigation', () => {
+        expect(press({ keyCode: 8 }).defaultPrevented).toBe(true);
+        expect(inputManager.handleCommand).toHaveBeenCalledWith('back');
     });
 
     it('preserves desktop Enter and arrow behavior and existing GamepadA support', () => {
@@ -212,6 +222,40 @@ describe('keyboard navigation', () => {
         expect(press({ key: 'Escape' }).defaultPrevented).toBe(false);
         expect(press({ key: 'GamepadA', repeat: true }).defaultPrevented).toBe(true);
         expect(inputManager.handleCommand.mock.calls).toEqual([['select']]);
+    });
+
+    it.each([
+        ['ArrowUp', 'up'], ['ArrowDown', 'down'], ['ArrowLeft', 'left'], ['ArrowRight', 'right'],
+        ['Enter', 'select'], ['Escape', 'back'], ['Backspace', 'back']
+    ])('supports %s in the modern desktop layout', (key, command) => {
+        layoutManager.tv = false;
+        layoutManager.modern = true;
+        focus('<button>Movie</button>');
+        expect(press({ key }).defaultPrevented).toBe(true);
+        expect(inputManager.handleCommand).toHaveBeenCalledWith(command);
+    });
+
+    it.each(['ArrowUp', 'Enter', 'Escape', 'Backspace'])('does not cancel unused %s', key => {
+        inputManager.handleCommand.mockReturnValueOnce(false);
+        expect(press({ key }).defaultPrevented).toBe(false);
+        expect(document.documentElement.classList.contains('directionalNavigation')).toBe(false);
+    });
+
+    it('switches focus styling without cancelling pointer or wheel events', () => {
+        press({ key: 'ArrowRight' });
+        expect(document.documentElement.classList.contains('directionalNavigation')).toBe(true);
+        const mouse = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+        document.body.dispatchEvent(mouse);
+        expect(mouse.defaultPrevented).toBe(false);
+        expect(document.documentElement.classList.contains('directionalNavigation')).toBe(false);
+        const wheel = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+        document.body.dispatchEvent(wheel);
+        expect(wheel.defaultPrevented).toBe(false);
+    });
+
+    it('does not handle IME composition keys', () => {
+        expect(press({ key: 'Enter', isComposing: true }).defaultPrevented).toBe(false);
+        expect(inputManager.handleCommand).not.toHaveBeenCalled();
     });
 
     it.each([

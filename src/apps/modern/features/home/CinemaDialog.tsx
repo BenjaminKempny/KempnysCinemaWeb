@@ -2,7 +2,6 @@ import Dialog, { type DialogProps } from '@mui/material/Dialog';
 import React, { useCallback } from 'react';
 
 import layoutManager from 'components/layoutManager';
-import browser from 'scripts/browser';
 import { getKeyName, isInteractiveElement } from 'scripts/keyboardUtils';
 
 export default function CinemaDialog({ onClose, onKeyDown, disableEscapeKeyDown, ...props }: Readonly<DialogProps>) {
@@ -21,9 +20,9 @@ export default function CinemaDialog({ onClose, onKeyDown, disableEscapeKeyDown,
         if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
 
         const key = getKeyName(event.nativeEvent);
-        const hisenseBack = key === 'Backspace' && browser.tv && browser.hisense && browser.vidaa
-            && !isInteractiveElement(event.target instanceof Element ? event.target : document.activeElement);
-        if (key !== 'Back' && !(layoutManager.tv && key === 'Escape') && !hisenseBack) return;
+        const target = event.target instanceof Element ? event.target : document.activeElement;
+        const backspace = key === 'Backspace' && target?.tagName !== 'SELECT' && !isInteractiveElement(target);
+        if (key !== 'Back' && !((layoutManager.tv || layoutManager.modern) && key === 'Escape') && !backspace) return;
 
         const handled = event.defaultPrevented;
         event.preventDefault();

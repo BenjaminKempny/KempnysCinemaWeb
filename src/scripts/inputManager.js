@@ -86,22 +86,22 @@ export function handleCommand(commandName, options) {
         const eventResult = sourceElement.dispatchEvent(customEvent);
         if (!eventResult) {
             // event cancelled
-            return;
+            return true;
         }
     }
 
     const keyActions = (command) => ({
         'up': () => {
-            focusManager.moveUp(sourceElement);
+            return focusManager.moveUp(sourceElement);
         },
         'down': () => {
-            focusManager.moveDown(sourceElement);
+            return focusManager.moveDown(sourceElement);
         },
         'left': () => {
-            focusManager.moveLeft(sourceElement);
+            return focusManager.moveLeft(sourceElement);
         },
         'right': () => {
-            focusManager.moveRight(sourceElement);
+            return focusManager.moveRight(sourceElement);
         },
         'home': () => {
             appRouter.goHome();
@@ -110,14 +110,21 @@ export function handleCommand(commandName, options) {
             appRouter.showSettings();
         },
         'back': () => {
+            // Portal dialogs own dismissal; never navigate the page behind one.
+            if (sourceElement.closest?.('[role="dialog"], [role="alertdialog"]')) return true;
             if (appRouter.canGoBack()) {
                 appRouter.back();
+                return true;
             } else if (appHost.supports(AppFeature.Exit)) {
                 appHost.exit();
+                return true;
             }
+            return false;
         },
         'select': () => {
+            if (!focusManager.isCurrentlyFocusable(sourceElement)) return false;
             select(sourceElement);
+            return true;
         },
         'nextchapter': () => {
             playbackManager.nextChapter();
@@ -242,7 +249,7 @@ export function handleCommand(commandName, options) {
 
     const action = keyActions(commandName);
     if (action !== undefined) {
-        action.call();
+        return action.call();
     } else {
         console.debug(`inputManager: tried to process command with no action assigned: ${commandName}`);
     }

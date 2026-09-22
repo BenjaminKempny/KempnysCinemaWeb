@@ -12,6 +12,7 @@ vi.mock('components/focusManager', () => ({
         focus: (element: HTMLElement) => element.focus(),
         isCurrentlyFocusable: (element: HTMLElement) => element.isConnected && !element.hidden,
         getFocusableElements: (element: HTMLElement) => Array.from(element.querySelectorAll('a, button:not(:disabled), input'))
+            .filter(candidate => !candidate.hasAttribute('hidden'))
     }
 }));
 
@@ -24,6 +25,9 @@ function TestPage({ loading = false, reversed = false }: Readonly<{ loading?: bo
         <nav className='cinemaTabs'><Link to='/home' aria-current='page'>All</Link></nav>
         {loading ? <div role='status'>Loading</div> : <div className='cinemaContent'>
             {ids.map(id => <Link key={id} id={id} to={`/details?id=${id}`}>{id}</Link>)}
+            <section data-focus-region='continue'>
+                <Link id='duplicate' to='/details?id=second'>second</Link>
+            </section>
         </div>}
     </div>;
 }
@@ -92,6 +96,14 @@ describe('Cinema TV focus', () => {
         expect(document.activeElement?.id).toBe('second');
     });
 
+    it('restores the correct region when the same movie appears more than once', async () => {
+        await render();
+        document.getElementById('duplicate')?.focus();
+        act(() => navigate('/details?id=second'));
+        await act(async () => navigate(-1));
+        expect(document.activeElement?.id).toBe('duplicate');
+    });
+
     it('does not steal focus while loading more cards', async () => {
         await render();
         document.getElementById('second')?.focus();
@@ -111,9 +123,19 @@ describe('Cinema TV focus', () => {
         }
     });
 
-    it('does not automatically focus controls in desktop mode', async () => {
+    it('initializes focus in desktop mode as well', async () => {
         layoutManager.tv = false;
         await render();
-        expect(document.activeElement).toBe(document.body);
+        expect(document.activeElement?.textContent).toBe('All');
+    });
+
+    it('recovers focus if the currently selected card is hidden dynamically', async () => {
+        await render();
+        const selected = document.getElementById('second');
+        selected?.focus();
+        await act(async () => {
+            if (selected) selected.hidden = true;
+        });
+        expect(document.activeElement?.textContent).toBe('All');
     });
 });

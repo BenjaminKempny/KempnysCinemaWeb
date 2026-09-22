@@ -15,7 +15,7 @@ let activeElement;
      * Returns _true_ if AutoFocuser is enabled.
      */
 export function isEnabled() {
-    return layoutManager.tv;
+    return layoutManager.tv || layoutManager.modern;
 }
 
 /**

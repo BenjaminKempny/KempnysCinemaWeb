@@ -9,20 +9,34 @@ import layoutManager from '../components/layoutManager';
 import appSettings from './settings/appSettings';
 import { getKeyName, isContentEditable, isInteractiveElement, isMediaKey, isNavigationKey } from './keyboardUtils';
 
+import './keyboardNavigation.scss';
+
 export { getKeyName, isInteractiveElement, isMediaKey, isNavigationKey };
+
+function navigationCommand(command) {
+    const wasDirectional = document.documentElement.classList.contains('directionalNavigation');
+    document.documentElement.classList.add('directionalNavigation');
+    const handled = inputManager.handleCommand(command) !== false;
+    if (!handled && !wasDirectional) document.documentElement.classList.remove('directionalNavigation');
+    return handled;
+}
 
 export function enable() {
     const hasMediaSession = 'mediaSession' in navigator;
+    const pointerInput = () => document.documentElement.classList.remove('directionalNavigation');
+    document.addEventListener('mousedown', pointerInput, { passive: true });
+    document.addEventListener('touchstart', pointerInput, { passive: true });
     window.addEventListener('keydown', function (e) {
-        if (e.defaultPrevented) return;
+        if (e.defaultPrevented || e.isComposing) return;
 
         // Skip modified keys
         if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
 
         const key = getKeyName(e);
+        const directional = layoutManager.tv || layoutManager.modern;
 
-        // Ignore navigation keys for non-TV
-        if (!layoutManager.tv && isNavigationKey(key)) {
+        // The legacy desktop layout keeps its existing keyboard shortcuts.
+        if (!directional && isNavigationKey(key)) {
             return;
         }
 
@@ -33,42 +47,42 @@ export function enable() {
 
         let capture = true;
         const activeElement = document.activeElement;
-        const canActivate = !layoutManager.tv || !e.repeat;
+        const canActivate = !directional || !e.repeat;
 
         switch (key) {
             case 'ArrowLeft':
                 if (!isInteractiveElement(activeElement)) {
-                    inputManager.handleCommand('left');
+                    capture = navigationCommand('left');
                 } else {
                     capture = false;
                 }
                 break;
             case 'ArrowUp':
-                if (activeElement?.tagName === 'SELECT' || activeElement?.tagName === 'TEXTAREA' || isContentEditable(activeElement)) {
+                if (activeElement?.matches('select, textarea, input[type="number"], input[type="range"]') || isContentEditable(activeElement)) {
                     capture = false;
                 } else {
-                    inputManager.handleCommand('up');
+                    capture = navigationCommand('up');
                 }
                 break;
             case 'ArrowRight':
                 if (!isInteractiveElement(activeElement)) {
-                    inputManager.handleCommand('right');
+                    capture = navigationCommand('right');
                 } else {
                     capture = false;
                 }
                 break;
             case 'ArrowDown':
-                if (activeElement?.tagName === 'SELECT' || activeElement?.tagName === 'TEXTAREA' || isContentEditable(activeElement)) {
+                if (activeElement?.matches('select, textarea, input[type="number"], input[type="range"]') || isContentEditable(activeElement)) {
                     capture = false;
                 } else {
-                    inputManager.handleCommand('down');
+                    capture = navigationCommand('down');
                 }
                 break;
 
             case 'Enter':
-                if (layoutManager.tv && activeElement?.tagName !== 'SELECT' && !isInteractiveElement(activeElement)) {
+                if (directional && activeElement?.tagName !== 'SELECT' && !isInteractiveElement(activeElement)) {
                     if (canActivate) {
-                        inputManager.handleCommand('select');
+                        capture = navigationCommand('select');
                     }
                 } else {
                     capture = false;
@@ -85,11 +99,10 @@ export function enable() {
                 }
                 break;
 
-            // HACK: Hisense TV (VIDAA OS) uses Backspace for Back action
             case 'Backspace':
-                if (browser.tv && browser.hisense && browser.vidaa && !isInteractiveElement(activeElement)) {
+                if (directional && activeElement?.tagName !== 'SELECT' && !isInteractiveElement(activeElement)) {
                     if (canActivate) {
-                        inputManager.handleCommand('back');
+                        capture = navigationCommand('back');
                     }
                 } else {
                     capture = false;
@@ -97,9 +110,9 @@ export function enable() {
                 break;
 
             case 'Escape':
-                if (layoutManager.tv) {
+                if (directional) {
                     if (canActivate) {
-                        inputManager.handleCommand('back');
+                        capture = navigationCommand('back');
                     }
                 } else {
                     capture = false;

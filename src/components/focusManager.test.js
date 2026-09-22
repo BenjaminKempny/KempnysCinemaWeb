@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import focusManager from './focusManager';
+import layoutManager from './layoutManager';
 
 vi.mock('./scrollManager', () => ({ default: { isEnabled: () => true } }));
+vi.mock('./layoutManager', () => ({ default: { modern: false } }));
 
 function button(parent, left, top, width = 100, height = 100) {
     const element = document.createElement('button');
@@ -15,6 +17,7 @@ function button(parent, left, top, width = 100, height = 100) {
 
 afterEach(() => {
     document.body.innerHTML = '';
+    layoutManager.modern = false;
 });
 
 describe('directional focus navigation', () => {
@@ -121,5 +124,82 @@ describe('directional focus navigation', () => {
         target.remove();
         expect(focusManager.isCurrentlyFocusable(target)).toBe(false);
         expect(focusManager.isCurrentlyFocusable(null)).toBe(false);
+    });
+
+    it('supports custom tabindex controls but not anchors without a destination', () => {
+        const source = button(document.body, 0, 0);
+        const anchor = document.createElement('a');
+        anchor.textContent = 'Not a link';
+        document.body.append(anchor);
+        const custom = document.createElement('div');
+        custom.tabIndex = 0;
+        custom.setAttribute('role', 'button');
+        const geometry = button(document.body, 200, 0);
+        custom.getBoundingClientRect = geometry.getBoundingClientRect;
+        custom.getClientRects = geometry.getClientRects;
+        geometry.replaceWith(custom);
+        source.focus();
+        focusManager.moveRight();
+        expect(document.activeElement).toBe(custom);
+        expect(focusManager.getFocusableElements(document.body)).toEqual([source, custom]);
+    });
+
+    it('rejects disabled custom controls and hidden autofocus targets', () => {
+        const disabled = button(document.body, 0, 0);
+        disabled.className = 'focusable';
+        disabled.disabled = true;
+        const hidden = button(document.body, 110, 0);
+        hidden.hidden = true;
+        hidden.autofocus = true;
+        button(document.body, 120, 0).setAttribute('aria-disabled', 'true');
+        button(document.body, 130, 0).tabIndex = -2;
+        button(document.body, 140, 0).style.opacity = '0';
+        const transparent = document.createElement('div');
+        transparent.style.opacity = '0';
+        document.body.append(transparent);
+        button(transparent, 150, 0);
+        const target = button(document.body, 200, 0);
+        expect(focusManager.getFocusableElements(document.body)).toEqual([target]);
+        expect(focusManager.autoFocus(document.body)).toBe(target);
+    });
+
+    it('finds newly loaded cards and consumes keys at boundaries', () => {
+        expect(focusManager.moveRight()).toBe(false);
+        const first = button(document.body, 0, 0);
+        expect(focusManager.moveRight()).toBe(true);
+        expect(document.activeElement).toBe(first);
+        const added = button(document.body, 120, 0);
+        focusManager.moveRight();
+        expect(document.activeElement).toBe(added);
+        expect(focusManager.moveRight()).toBe(true);
+        expect(document.activeElement).toBe(added);
+    });
+
+    it('uses an open portal dialog even when focus was lost', () => {
+        button(document.body, 0, 0);
+        const dialog = document.createElement('div');
+        dialog.setAttribute('role', 'dialog');
+        dialog.getClientRects = () => [{ width: 500, height: 500 }];
+        document.body.append(dialog);
+        const inside = button(dialog, 0, 0);
+        focusManager.moveRight();
+        expect(document.activeElement).toBe(inside);
+    });
+
+    it('reaches overlay actions vertically while moving horizontally between cards', () => {
+        layoutManager.modern = true;
+        const card = button(document.body, 0, 0, 200, 300);
+        const menu = button(document.body, 150, 10, 40, 40);
+        const play = button(document.body, 150, 240, 40, 40);
+        const next = button(document.body, 220, 0, 200, 300);
+        card.focus();
+        focusManager.moveRight();
+        expect(document.activeElement).toBe(next);
+        card.focus();
+        focusManager.moveUp();
+        expect(document.activeElement).toBe(menu);
+        card.focus();
+        focusManager.moveDown();
+        expect(document.activeElement).toBe(play);
     });
 });
