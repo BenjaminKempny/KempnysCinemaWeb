@@ -28,6 +28,7 @@ import Dialog from './CinemaDialog';
 import InfiniteScroll from './InfiniteScroll';
 import MediaCard, { Artwork, RequestState, useArtwork, useCinemaPlayback, useDetailsUrl } from './MediaCard';
 import { cinemaUrl } from './navigation';
+import { useCollectionOperationsDisabled } from './settings';
 
 type ManageCollection = (options: CollectionEditorOptions) => void;
 
@@ -240,6 +241,7 @@ export function Collections({ scope, onManage }: Readonly<{ scope: CinemaScope; 
 
 function CollectionHeader({ item, onManage }: Readonly<{ item: BaseItemDto; onManage?: ManageCollection }>) {
     const to = useDetailsUrl(item);
+    const collectionsLocked = useCollectionOperationsDisabled();
     const onAdd = useCallback(() => onManage?.({ collectionId: item.Id }), [item.Id, onManage]);
     return (
         <div className='cinemaCollectionHero'>
@@ -251,7 +253,7 @@ function CollectionHeader({ item, onManage }: Readonly<{ item: BaseItemDto; onMa
                     {onManage && <button className='cinemaButton cinemaButton-primary' onClick={onAdd}>
                         {globalize.translate('HeaderAddToCollection')}
                     </button>}
-                    <Link className='cinemaButton' to={to}>{globalize.translate('CinemaDetails')}</Link>
+                    {!collectionsLocked && <Link className='cinemaButton' to={to}>{globalize.translate('CinemaDetails')}</Link>}
                 </div>
             </div>
         </div>
