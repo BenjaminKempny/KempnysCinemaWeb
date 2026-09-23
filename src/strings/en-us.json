@@ -357,6 +357,8 @@
     "EnableLibraryHelp": "Disabling the library will hide it from all user views.",
     "EnableNextVideoInfoOverlay": "Show next video info during playback",
     "EnableNextVideoInfoOverlayHelp": "At the end of a video, display info about the next video coming up in the current playlist.",
+    "EnableSimplePlayer": "Simple player (optimized for TV remotes)",
+    "EnableSimplePlayerHelp": "Reduces the video player to the essentials: seek using the progress bar instead of skip buttons, and show only settings, playback time and audio\/quality selection.",
     "EnablePhotos": "Display the photos",
     "EnablePhotosHelp": "Images will be detected and displayed alongside other media files.",
     "EnableCardLayout": "Display visual CardBox",

@@ -191,6 +191,8 @@
     "EnableHardwareEncoding": "Hardwarekodierung aktivieren",
     "EnableNextVideoInfoOverlay": "Zeige Informationen zum nächsten Video während der Wiedergabe",
     "EnableNextVideoInfoOverlayHelp": "Blendet am Ende eines Videos Informationen über das nächste abzuspielende Video der aktuellen Wiedergabeliste ein.",
+    "EnableSimplePlayer": "Einfacher Player (optimiert für TV-Fernbedienung)",
+    "EnableSimplePlayerHelp": "Reduziert den Videoplayer auf das Wesentliche: Spulen erfolgt über den Fortschrittsbalken statt über Skip-Buttons; angezeigt werden nur Einstellungen, Wiedergabezeit sowie Audio- und Qualitätsauswahl.",
     "EnablePhotos": "Fotos anzeigen",
     "EnablePhotosHelp": "Bilder werden erkannt und neben anderen Mediendateien angezeigt.",
     "EnableStreamLooping": "Live-Streams automatisch verknüpfen",

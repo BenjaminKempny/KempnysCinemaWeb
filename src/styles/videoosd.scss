@@ -8,8 +8,17 @@
 }
 
 .chapterThumbTextContainer,
-.videoOsdBottom {
+.videoOsdBottom,
+.videoOsdTop {
     user-select: none;
+}
+
+/* Shared frosted-glass surface used by the OSD controls */
+@mixin osd-glass {
+    background: rgba(28, 28, 30, 0.42);
+    backdrop-filter: blur(22px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .videoOsdBottom {
@@ -17,10 +26,9 @@
     left: 0;
     right: 0;
     position: fixed;
-    background: linear-gradient(0deg, rgba(16, 16, 16, 0.75) 0%, rgba(16, 16, 16, 0) 100%);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-    padding-top: 7.5em;
+    padding-top: 5em;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -31,31 +39,120 @@
     -webkit-touch-callout: none;
     pointer-events: none;
 
-    @include conditional-max(padding-bottom, 1.75em, env(safe-area-inset-bottom));
+    @include conditional-max(padding-bottom, 1.25em, env(safe-area-inset-bottom));
 }
 
-.skinHeader-withBackground.osdHeader {
+/* Minimal floating top overlay: back button + item logo only */
+.videoOsdTop {
+    top: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1.25em 1.5em;
+    padding-left: max(1.5em, env(safe-area-inset-left));
+    padding-right: max(1.5em, env(safe-area-inset-right));
+    padding-top: max(1.25em, env(safe-area-inset-top));
+    color: #fff;
+    will-change: opacity;
     transition: opacity 0.3s ease-out;
-    position: relative;
-    z-index: 1;
-    background: linear-gradient(180deg, rgba(16, 16, 16, 0.75) 0%, rgba(16, 16, 16, 0) 100%);
-    backdrop-filter: none;
-    color: #eee;
-    height: 7.5em;
+    -webkit-touch-callout: none;
     pointer-events: none;
+
+    > * {
+        pointer-events: all;
+    }
+
+    [dir="rtl"] & {
+        flex-direction: row-reverse;
+    }
+}
+
+/* No header bar during playback: only the floating back button and logo.
+   The app header is kept for the cast / SyncPlay controls, but stripped of
+   its background so it no longer reads as a bar. */
+.skinHeader.osdHeader {
+    position: fixed;
+    top: 0;
+    height: auto;
+    background: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    color: #fff;
+    transition: opacity 0.3s ease-out;
+    pointer-events: none;
+}
+
+.osdHeader .headerLeft,
+.osdHeader .headerTabs,
+.osdHeader .pageTitle,
+.osdHeader .headerButton:not(.headerCastButton):not(.headerSyncButton) {
+    display: none !important;
+}
+
+.osdHeader .headerRight,
+.osdHeader .videoOsd-appBar {
+    pointer-events: none;
+}
+
+.osdHeader .headerRight > *,
+.osdHeader .videoOsd-appBar button {
+    pointer-events: all;
 }
 
 .osdHeader-hidden {
     opacity: 0;
 }
 
-.osdHeader .headerTop {
-    pointer-events: all;
-    max-height: 3.5em;
+/* Round frosted-glass icon button (back button) */
+.osdGlassButton {
+    @include osd-glass;
+
+    border-radius: 50%;
+    color: #fff;
+    transition: background 0.2s ease-out, transform 0.2s ease-out;
 }
 
-.osdHeader .headerButton:not(.headerBackButton):not(.headerCastButton):not(.headerSyncButton) {
-    display: none;
+.osdGlassButton:hover {
+    background: rgba(58, 58, 62, 0.55);
+}
+
+/* Item logo displayed instead of the title text */
+.osdLogo {
+    height: 6em;
+    width: 26em;
+    max-width: 45vw;
+    margin: 0 0 0 1.25em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left center;
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.7));
+
+    [dir="rtl"] & {
+        margin: 0 1.25em 0 0;
+        background-position: right center;
+    }
+}
+
+@media all and (max-width: 50em) {
+    .osdLogo {
+        height: 4em;
+        width: 16em;
+    }
+}
+
+/* Fallback title, only shown when the item has no logo image */
+.videoOsdTop .osdTitle {
+    margin: 0 0 0 1em;
+    font-weight: 500;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+
+    [dir="rtl"] & {
+        margin: 0 1em 0 0;
+    }
 }
 
 .chapterThumbContainer {
@@ -122,13 +219,47 @@
 .osdControls {
     pointer-events: all;
     flex-grow: 1;
-    padding: 0 0.8em;
+    padding: 0 1em;
+    max-width: 82em;
 }
 
 .videoOsdBottom .buttons {
-    padding: 0.25em 0 0;
+    padding: 0.5em 0 0;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+
+    [dir="rtl"] & {
+        flex-direction: row-reverse;
+    }
+}
+
+/* Frosted-glass pills grouping the playback and secondary controls */
+.osdControlGroup {
+    @include osd-glass;
+
+    display: flex;
+    align-items: center;
+    border-radius: 100em;
+    padding: 0.25em 0.4em;
+
+    [dir="rtl"] & {
+        flex-direction: row-reverse;
+    }
+}
+
+.osdControlGroup .paper-icon-button-light {
+    margin: 0 0.1em;
+    transition: background 0.2s ease-out;
+}
+
+.osdControlGroup .paper-icon-button-light:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.osdPlaybackButtons {
+    display: flex;
     align-items: center;
 
     [dir="rtl"] & {
@@ -137,8 +268,8 @@
 }
 
 .osdVolumeSliderContainer {
-    width: 9em;
-    flex-grow: 1;
+    width: 6em;
+    flex-grow: 0;
 }
 
 .osdMediaInfo,
@@ -148,20 +279,18 @@
 }
 
 .volumeButtons {
-    margin: 0 1em 0 0.29em;
+    margin: 0 0.5em 0 0;
     display: flex;
     align-items: center;
 }
 
 .osdTimeText {
-    margin-left: 1em;
+    margin-left: 0.5em;
     margin-right: auto;
     user-select: none;
-}
-
-.osdTitle,
-.osdTitleSmall {
-    margin: 0 1em 0 0;
+    opacity: 0.8;
+    font-size: 0.9em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 .osdMediaInfo {
@@ -170,25 +299,30 @@
 }
 
 .osdSecondaryMediaInfo {
-    padding-left: 0.6em !important;
+    padding-left: 0.5em !important;
+    opacity: 0.85;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 .osdTextContainer {
     display: flex;
     align-items: center;
     user-select: none;
-    margin-bottom: 0.7em;
+    margin-bottom: 0.5em;
     padding-left: 0.5em;
 }
 
 .osdMainTextContainer {
     align-items: baseline;
+    margin-bottom: 0;
 }
 
 .osdMediaStatus {
-    margin-left: auto;
     display: flex;
     align-items: center;
+    opacity: 0.85;
+    font-size: 0.9em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 .osdMediaStatus span:first-child {
@@ -197,6 +331,60 @@
 
 .osdMediaStatus .animate {
     animation: spin-clockwise 4s linear infinite;
+}
+
+/* Compact "position / duration" time readout, e.g. "3:00 / 8:00" */
+.osdTimeCombined {
+    display: flex;
+    align-items: center;
+    margin: 0 0.75em 0 0.5em;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.95;
+    white-space: nowrap;
+
+    [dir="rtl"] & {
+        margin: 0 0.5em 0 0.75em;
+    }
+}
+
+.osdTimeCombinedSeparator {
+    margin: 0 0.3em;
+    opacity: 0.55;
+}
+
+.osdPositionText.hide + .osdTimeCombinedSeparator {
+    display: none;
+}
+
+/* Full-width, thin, minimal progress bar sitting above the control row */
+.videoOsdBottom .sliderContainer:not(.osdVolumeSliderContainer) {
+    margin: 0 0 0.35em !important;
+}
+
+.videoOsdBottom .osdPositionSlider {
+    color: #fff;
+}
+
+.videoOsdBottom .osdPositionSlider::-webkit-slider-thumb {
+    background: #fff;
+    width: 0.85em;
+    height: 0.85em;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.videoOsdBottom .osdPositionSlider::-moz-range-thumb {
+    background: #fff;
+    width: 0.85em;
+    height: 0.85em;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.videoOsdBottom .mdl-slider-background-lower {
+    background-color: #fff;
+}
+
+.videoOsdBottom .mdl-slider-background-upper {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 @media all and (max-width: 30em) {
@@ -352,5 +540,48 @@
 @keyframes spin-clockwise {
     100% {
         transform: rotate(360deg);
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Simple player: a reduced, remote-friendly layout.
+ * Seeking happens on the progress bar instead of skip buttons, and only the
+ * essentials remain: play/pause, playback times, audio selection and settings
+ * (which also hosts the quality picker).
+ * ------------------------------------------------------------------------ */
+
+.videoOsdPage-simple {
+    .btnRewind,
+    .btnFastForward,
+    .btnPreviousTrack,
+    .btnNextTrack,
+    .btnPreviousChapter,
+    .btnNextChapter,
+    .btnRecord,
+    .btnUserRating,
+    .btnSubtitles,
+    .btnAirPlay,
+    .btnPip,
+    .volumeButtons,
+    .osdSecondaryMediaInfo {
+        display: none !important;
+    }
+
+    /* Always show the "ends at" time, even on narrow screens */
+    .endsAtText {
+        display: inline !important;
+    }
+
+    .osdTimeCombined {
+        font-size: 1.1em;
+    }
+
+    /* A taller, easier to hit progress bar for remote control seeking */
+    .osdPositionSlider {
+        font-size: 1.25em;
+    }
+
+    .osdControlGroup {
+        padding: 0.35em 0.5em;
     }
 }

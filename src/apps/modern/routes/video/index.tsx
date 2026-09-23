@@ -8,7 +8,6 @@ import AppToolbar from 'components/toolbar/AppToolbar';
 import ViewManagerPage from 'components/viewManager/ViewManagerPage';
 import { EventType } from 'constants/eventType';
 import Events, { type Event } from 'utils/events';
-import Typography from '@mui/material/Typography';
 
 /**
  * Video player page component that renders mui controls for the top controls and the legacy view for everything else.
@@ -16,14 +15,9 @@ import Typography from '@mui/material/Typography';
 const VideoPage: FC = () => {
     const documentRef = useRef<Document>(document);
     const [ isVisible, setIsVisible ] = useState(true);
-    const [ videoTitle, setVideoTitle ] = useState<string>('');
 
     const onShowVideoOsd = (_e: Event, isShowing: boolean) => {
         setIsVisible(isShowing);
-    };
-
-    const onTitleChange = (_e: Event, title: string) => {
-        setVideoTitle(title);
     };
 
     useEffect(() => {
@@ -31,13 +25,11 @@ const VideoPage: FC = () => {
 
         if (doc) {
             Events.on(doc, EventType.SHOW_VIDEO_OSD, onShowVideoOsd);
-            Events.on(doc, EventType.VIDEO_TITLE_CHANGE, onTitleChange);
         }
 
         return () => {
             if (doc) {
                 Events.off(doc, EventType.SHOW_VIDEO_OSD, onShowVideoOsd);
-                Events.off(doc, EventType.VIDEO_TITLE_CHANGE, onTitleChange);
             }
         };
     }, []);
@@ -49,20 +41,21 @@ const VideoPage: FC = () => {
                 easing='fade-out'
             >
                 <Box
-                    className='skinHeader skinHeader-withBackground skinHeader-blurred osdHeader'
+                    className='skinHeader osdHeader'
                     sx={{
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         right: 0,
                         color: 'white',
-                        pointerEvents: 'unset !important'
+                        background: 'none',
+                        backdropFilter: 'none',
+                        pointerEvents: 'none'
                     }}
                 >
                     <AppToolbar
                         isDrawerAvailable={false}
                         isDrawerOpen={false}
-                        isBackButtonAvailable
                         isUserMenuAvailable={false}
                         buttons={
                             <>
@@ -71,9 +64,7 @@ const VideoPage: FC = () => {
                             </>
                         }
                         className='videoOsd-appBar'
-                    >
-                        <Typography>{videoTitle}</Typography>
-                    </AppToolbar>
+                    />
                 </Box>
             </Fade>
 

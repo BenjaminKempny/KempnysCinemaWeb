@@ -30,7 +30,6 @@ import shell from 'scripts/shell';
 import SubtitleSync from 'components/subtitlesync/subtitlesync';
 import { appRouter } from 'components/router/appRouter';
 import { ServerConnections } from 'lib/jellyfin-apiclient';
-import LibraryMenu from 'scripts/libraryMenu';
 import { setBackdropTransparency, TRANSPARENCY_LEVEL } from 'components/backdrop/backdrop';
 import { pluginManager } from 'components/pluginManager';
 
@@ -191,7 +190,9 @@ export default function (view) {
         currentItem = item;
         if (!item) {
             updateRecordingButton(null);
-            LibraryMenu.setTitle('');
+            clearOsdLogo();
+            osdTitleElement.textContent = '';
+            osdTitleElement.classList.remove('hide');
             Events.trigger(document, EventType.VIDEO_TITLE_CHANGE, [ '' ]);
             nowPlayingVolumeSlider.disabled = true;
             nowPlayingPositionSlider.disabled = true;
@@ -199,8 +200,6 @@ export default function (view) {
             btnRewind.disabled = true;
             view.querySelector('.btnSubtitles').classList.add('hide');
             view.querySelector('.btnAudio').classList.add('hide');
-            view.querySelector('.osdTitle').innerHTML = '';
-            view.querySelector('.osdMediaInfo').innerHTML = '';
             return;
         }
 
@@ -234,6 +233,48 @@ export default function (view) {
         }
     }
 
+    function getLogoImageUrl(item, apiClient) {
+        const options = {
+            type: 'Logo',
+            maxHeight: 200
+        };
+
+        if (item.ImageTags?.Logo) {
+            options.tag = item.ImageTags.Logo;
+            return apiClient.getScaledImageUrl(item.Id, options);
+        }
+
+        if (item.ParentLogoImageTag && item.ParentLogoItemId) {
+            options.tag = item.ParentLogoImageTag;
+            return apiClient.getScaledImageUrl(item.ParentLogoItemId, options);
+        }
+
+        return null;
+    }
+
+    function renderOsdHeading(item, title) {
+        const apiClient = ServerConnections.getApiClient(item.ServerId);
+        const logoUrl = getLogoImageUrl(item, apiClient);
+
+        if (logoUrl) {
+            osdLogoElement.style.backgroundImage = `url('${logoUrl}')`;
+            osdLogoElement.setAttribute('aria-label', title);
+            osdLogoElement.classList.remove('hide');
+            osdTitleElement.classList.add('hide');
+            osdTitleElement.textContent = '';
+        } else {
+            clearOsdLogo();
+            osdTitleElement.textContent = title;
+            osdTitleElement.classList.remove('hide');
+        }
+    }
+
+    function clearOsdLogo() {
+        osdLogoElement.style.backgroundImage = '';
+        osdLogoElement.removeAttribute('aria-label');
+        osdLogoElement.classList.add('hide');
+    }
+
     function setTitle(item, parentName) {
         let itemName = itemHelper.getDisplayName(item, {
             includeParentInfo: item.Type !== 'Program',
@@ -261,7 +302,8 @@ export default function (view) {
             }
         }
 
-        LibraryMenu.setTitle(title);
+        renderOsdHeading(item, title);
+
         Events.trigger(document, EventType.VIDEO_TITLE_CHANGE, [ title ]);
 
         document.title = title;
@@ -271,14 +313,14 @@ export default function (view) {
 
     function showOsd(focusElement) {
         Events.trigger(document, EventType.SHOW_VIDEO_OSD, [ true ]);
-        slideDownToShow(headerElement);
+        slideDownToShow(osdTopElement);
         showMainOsdControls(focusElement);
         resetIdle();
     }
 
     function hideOsd() {
         Events.trigger(document, EventType.SHOW_VIDEO_OSD, [ false ]);
-        slideUpToHide(headerElement);
+        slideUpToHide(osdTopElement);
         hideMainOsdControls();
         mouseManager.hideCursor();
     }
@@ -321,7 +363,7 @@ export default function (view) {
 
     function onHideAnimationComplete(e) {
         const elem = e.target;
-        if (elem !== osdBottomElement && elem !== headerElement) return;
+        if (elem !== osdBottomElement && elem !== osdTopElement) return;
         elem.classList.add('hide');
         elem.removeEventListener(transitionEndEventName, onHideAnimationComplete);
     }
@@ -366,7 +408,7 @@ export default function (view) {
 
             // Firefox does not blur by itself
             if (osdBottomElement.contains(document.activeElement)
-                || headerElement.contains(document.activeElement)) {
+                || osdTopElement.contains(document.activeElement)) {
                 document.activeElement.blur();
             }
         }
@@ -787,6 +829,20 @@ export default function (view) {
         onFullscreenChanged();
     }
 
+    /**
+     * The action sheet rejects its promise when the user dismisses it without
+     * picking an option. That is a normal cancellation, so swallow it instead of
+     * letting it bubble up as an unhandled rejection.
+     * @param {Error} err The rejection reason.
+     */
+    function onMenuDismissed(err) {
+        console.debug('[VideoPlayer] menu dismissed without a selection', err);
+    }
+
+    function isSimplePlayerEnabled() {
+        return userSettings.enableSimplePlayer();
+    }
+
     function getDisplayPercentByTimeOfDay(programStartDateMs, programRuntimeMs, currentTimeMs) {
         return (currentTimeMs - programStartDateMs) / programRuntimeMs * 100;
     }
@@ -846,7 +902,7 @@ export default function (view) {
                 nowPlayingPositionText.classList.add('hide');
             }
 
-            if (userSettings.enableVideoRemainingTime()) {
+            if (userSettings.enableVideoRemainingTime() || isSimplePlayerEnabled()) {
                 const leftTicks = runtimeTicks - positionTicks;
                 if (leftTicks >= 0) {
                     updateTimeText(nowPlayingDurationText, leftTicks);
@@ -945,6 +1001,9 @@ export default function (view) {
     }
 
     function nowPlayingDurationTextClick() {
+        // In simple player mode the remaining time is always shown, so the toggle is a no-op
+        if (isSimplePlayerEnabled()) return;
+
         userSettings.enableVideoRemainingTime(!userSettings.enableVideoRemainingTime());
         // immediately update the text, without waiting for the next tick update or if the player is paused
         const state = playbackManager.getPlayerState(currentPlayer);
@@ -974,7 +1033,7 @@ export default function (view) {
                     stats: true,
                     suboffset: showSubOffset,
                     onOption: onSettingsOption
-                }).finally(() => {
+                }).catch(onMenuDismissed).finally(() => {
                     resetIdle();
                 });
 
@@ -1047,7 +1106,7 @@ export default function (view) {
                 if (index !== currentIndex) {
                     playbackManager.setAudioStreamIndex(index, player);
                 }
-            }).finally(() => {
+            }).catch(onMenuDismissed).finally(() => {
                 resetIdle();
             });
 
@@ -1095,6 +1154,7 @@ export default function (view) {
                 }
             }
         })
+            .catch(onMenuDismissed)
             .finally(() => {
                 resetIdle();
             });
@@ -1174,7 +1234,7 @@ export default function (view) {
                 }
 
                 toggleSubtitleSync();
-            }).finally(() => {
+            }).catch(onMenuDismissed).finally(() => {
                 resetIdle();
             });
 
@@ -1651,11 +1711,14 @@ export default function (view) {
     const transitionEndEventName = dom.whichTransitionEvent();
     const headerElement = document.querySelector('.skinHeader');
     const osdBottomElement = view.querySelector('.videoOsdBottom-maincontrols');
+    const osdTopElement = view.querySelector('.videoOsdTop-maincontrols');
+    const osdLogoElement = view.querySelector('.osdLogo');
+    const osdTitleElement = view.querySelector('.osdTitle');
 
     nowPlayingPositionSlider.enableKeyboardDragging();
     nowPlayingVolumeSlider.enableKeyboardDragging();
 
-    if (layoutManager.tv) {
+    if (layoutManager.tv || userSettings.enableSimplePlayer()) {
         nowPlayingPositionSlider.classList.add('focusable');
     }
 
@@ -1663,6 +1726,7 @@ export default function (view) {
 
     view.addEventListener('viewbeforeshow', function () {
         headerElement.classList.add('osdHeader');
+        view.classList.toggle('videoOsdPage-simple', userSettings.enableSimplePlayer());
         setBackdropTransparency(TRANSPARENCY_LEVEL.Full);
     });
     view.addEventListener('viewshow', function () {
@@ -1762,6 +1826,9 @@ export default function (view) {
         Events.off(playbackManager, 'playerchange', onPlayerChange);
         releaseCurrentPlayer();
     });
+    view.querySelector('.btnVideoOsdBack').addEventListener('click', function () {
+        appRouter.back();
+    });
     view.querySelector('.btnFullscreen').addEventListener('click', function () {
         playbackManager.toggleFullscreen(currentPlayer);
     });
@@ -1773,8 +1840,8 @@ export default function (view) {
     });
     view.querySelector('.btnVideoOsdSettings').addEventListener('click', onSettingsButtonClick);
     view.addEventListener('viewhide', function () {
-        clearHideAnimationEventListeners(headerElement);
-        headerElement.classList.remove('hide');
+        clearHideAnimationEventListeners(osdTopElement);
+        osdTopElement.classList.remove('hide');
     });
     view.addEventListener('viewdestroy', function () {
         if (self.touchHelper) {

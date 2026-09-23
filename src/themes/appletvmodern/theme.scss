@@ -378,8 +378,10 @@ html {
 
 /* Video OSD */
 
-.skinHeader-withBackground.osdHeader,
-.videoOsdBottom {
+/* The OSD itself stays transparent; the glass surfaces are the floating
+   control groups and the back button. */
+.osdControlGroup,
+.osdGlassButton {
 
     background: var(--jf-glass-bg-strong, $glass-bg-strong) !important;
 

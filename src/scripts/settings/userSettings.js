@@ -250,6 +250,21 @@ export class UserSettings {
     }
 
     /**
+     * Get or set 'Simple Player' state. When enabled the video OSD is reduced to
+     * a TV/remote friendly layout: seeking happens on the progress bar only and
+     * only the essential controls are shown.
+     * @param {boolean|undefined} [val] - Flag to enable the simple player or undefined.
+     * @return {boolean} 'Simple Player' state.
+     */
+    enableSimplePlayer(val) {
+        if (val !== undefined) {
+            return this.set('enableSimplePlayer', val.toString(), false);
+        }
+
+        return toBoolean(this.get('enableSimplePlayer', false), false);
+    }
+
+    /**
      * Get or set 'Theme Songs' state.
      * @param {boolean|undefined} [val] - Flag to enable 'Theme Songs' or undefined.
      * @return {boolean} 'Theme Songs' state.
@@ -773,6 +788,7 @@ export const enableCinemaMode = currentSettings.enableCinemaMode.bind(currentSet
 export const selectAudioNormalization = currentSettings.selectAudioNormalization.bind(currentSettings);
 export const enableNextVideoInfoOverlay = currentSettings.enableNextVideoInfoOverlay.bind(currentSettings);
 export const enableVideoRemainingTime = currentSettings.enableVideoRemainingTime.bind(currentSettings);
+export const enableSimplePlayer = currentSettings.enableSimplePlayer.bind(currentSettings);
 export const enableThemeSongs = currentSettings.enableThemeSongs.bind(currentSettings);
 export const enableGenreHome = currentSettings.enableGenreHome.bind(currentSettings);
 export const disableCollectionOperations = currentSettings.disableCollectionOperations.bind(currentSettings);
